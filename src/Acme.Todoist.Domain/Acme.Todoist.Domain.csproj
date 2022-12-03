@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Acme.Todoist.Commnos\Acme.Todoist.Commons.csproj" />
+    <ProjectReference Include="..\Acme.Todoist.Infrastructure\Acme.Todoist.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

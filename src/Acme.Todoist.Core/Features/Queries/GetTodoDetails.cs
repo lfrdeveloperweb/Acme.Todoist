@@ -1,0 +1,27 @@
+﻿using Acme.Todoist.Infrastructure.Models;
+using Acme.Todoist.Infrastructure.Queries;
+using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Core.Repositories;
+using Acme.Todoist.Domain.Models;
+
+namespace Acme.Todoist.Core.Features.Queries
+{
+    public sealed class GetTodoDetails
+    {
+        public sealed record Query(string Id, OperationContext OperationContext) : Query<QueryResult<Todo>>(OperationContext);
+
+        public sealed class QueryHandler : IQueryHandler<Query, QueryResult<Todo>>
+        {
+            private readonly ITodoRepository _todoRepository;
+
+            public QueryHandler(ITodoRepository todoRepository)
+            {
+                _todoRepository = todoRepository;
+            }
+
+            public async Task<QueryResult<Todo>> Handle(Query query, CancellationToken cancellationToken) =>
+                QueryResult.OkOrNotFound(await _todoRepository.GetByIdAsync(query.Id, cancellationToken));
+        }
+    }
+}
