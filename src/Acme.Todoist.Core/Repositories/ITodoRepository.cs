@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace Acme.Todoist.Core.Repositories
 {
     public interface ITodoRepository
-    { /// <summary>
+    {
+        /// <summary>
         /// Retrieves an <see cref="Todo"/> by its identifier.
         /// </summary>
         Task<Todo> GetByIdAsync(string id, CancellationToken cancellationToken);

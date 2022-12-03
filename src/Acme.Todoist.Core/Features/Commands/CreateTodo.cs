@@ -43,7 +43,8 @@ namespace Acme.Todoist.Core.Features.Commands
                 _dateTimeProvider = dateTimeProvider;
             }
 
-            protected override async Task<CommandResult<Todo>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
+            protected override async Task<CommandResult<Todo>> ProcessCommandAsync(Command command,
+                CancellationToken cancellationToken)
             {
                 var todo = Mapper.Map<Todo>(command);
 
@@ -93,7 +94,8 @@ namespace Acme.Todoist.Core.Features.Commands
             /// <summary>
             /// Validate if can create Todo.
             /// </summary>
-            private Task CanCreate(Command command, ValidationContext<Command> validationContext, CancellationToken cancellationToken)
+            private Task CanCreate(Command command, ValidationContext<Command> validationContext,
+                CancellationToken cancellationToken)
             {
                 //if (!RequestContext.Membership.Roles.Contains(Common.Models.Security.Role.Manager) && !RequestContext.Membership.IsSuperAdmin)
                 //{

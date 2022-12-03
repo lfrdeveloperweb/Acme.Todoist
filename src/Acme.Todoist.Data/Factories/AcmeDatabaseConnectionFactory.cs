@@ -1,6 +1,7 @@
 ﻿using Acme.Todoist.Infrastructure.Data;
 using System.Data;
 using System.Data.SqlClient;
+using Npgsql;
 
 namespace Acme.Todoist.Data.Factories
 {
@@ -13,7 +14,7 @@ namespace Acme.Todoist.Data.Factories
             _connectionString = connectionString;
         }
 
-        // public IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
-        public IDbConnection CreateConnection() => new SqlConnection(_connectionString);
+        public IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
+        //public IDbConnection CreateConnection() => new SqlConnection(_connectionString);
     }
 }

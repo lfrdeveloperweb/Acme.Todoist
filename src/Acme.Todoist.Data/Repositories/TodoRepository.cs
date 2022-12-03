@@ -4,6 +4,7 @@ using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
 using Acme.Todoist.Infrastructure.Data;
 using Dapper;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,7 +14,7 @@ namespace Acme.Todoist.Data.Repositories
 {
     public sealed class TodoRepository : Repository, ITodoRepository
     {
-        const string BaseSelectCommandText = @"
+        private const string BaseSelectCommandText = @"
                 SELECT t.todo_id as Id
                      , t.title
                      , t.project_id
@@ -29,18 +30,18 @@ namespace Acme.Todoist.Data.Repositories
         /// <inheritdoc />
         public Task<Todo> GetByIdAsync(string id, CancellationToken cancellationToken)
         {
-            string commandText = $"{BaseSelectCommandText} WHERE t.todo_id = @Id";
+            const string commandText = $"{BaseSelectCommandText} WHERE t.todo_id = @Id";
 
-            return FirstOrDefaultWithTransaction<Todo>(commandText, new { Id = id });
+            return FirstOrDefaultWithTransaction<Todo>(commandText, new { Id = id }, cancellationToken);
         }
         
         public async Task<PaginatedResult<Todo>> ListPaginatedByFilterAsync(TodoFilter filter, PagingParameters pagingParameters, CancellationToken cancellationToken)
         {
-            var query = new StringBuilder($@"
+            var commandText = new StringBuilder($@"
                SELECT COUNT(t.todo_id)
-                 FROM todo t;
+                 FROM todo t @DynamicFilter;
 
-              {BaseSelectCommandText}
+              {BaseSelectCommandText} @DynamicFilter
                ORDER BY t.created_at
                  OFFSET @Offset ROWS
              FETCH NEXT @RecordsPerPage ROWS ONLY;");
@@ -48,10 +49,10 @@ namespace Acme.Todoist.Data.Repositories
             var parameters = new DynamicParameters();
             parameters.AddDynamicParams(new { Offset = pagingParameters.Offset, RecordsPerPage = pagingParameters.RecordsPerPage });
 
-            // ApplyFilter(query, filter, parameters);
+            ApplyFilter(commandText, filter, parameters);
 
             using var multiQuery = await base.Connection.QueryMultipleAsync(
-                new CommandDefinition(query.ToString(), parameters, Transaction, cancellationToken: cancellationToken));
+                new CommandDefinition(commandText.ToString(), parameters, Transaction, cancellationToken: cancellationToken));
 
             var totalRecords = await multiQuery.ReadSingleAsync<int>();
             var data = multiQuery.Read<Todo>();
@@ -64,7 +65,7 @@ namespace Acme.Todoist.Data.Repositories
             const string commandText =
                 @"SELECT 1 FROM todo WHERE todo_id = @Id;";
 
-            return ExistsWithTransactionAsync(commandText, new { Id = id });
+            return ExistsWithTransactionAsync(commandText, new { Id = id }, cancellationToken);
         }
 
         public Task CreateAsync(Todo todo, CancellationToken cancellationToken)
@@ -100,14 +101,29 @@ namespace Acme.Todoist.Data.Repositories
                 DueDate = todo.DueDate,
                 CreatedAt = todo.CreatedAt,
                 CreatedBy = todo.CreatedBy?.MembershipId
-            });
+            }, cancellationToken);
         }
 
         public Task DeleteAsync(Todo todo, CancellationToken cancellationToken)
         {
             const string commandText = "DELETE FROM todo WHERE todo_id = @Id;";
 
-            return ExecuteWithTransactionAsync(commandText, new { Id = todo.Id });
+            return ExecuteWithTransactionAsync(commandText, new { Id = todo.Id }, cancellationToken);
+        }
+
+        private static void ApplyFilter(StringBuilder sql, TodoFilter filter, DynamicParameters parameters)
+        {
+            var conditions = new Collection<string>();
+
+            if (filter.IsCompleted.HasValue)
+            {
+                conditions.Add($"t.completed_at is {(filter.IsCompleted.Value ? "not null" : "null")}");
+            }
+
+            // Put everything together in the WHERE clause
+            var dynamicFilter = conditions.Any() ? $" WHERE {string.Join(" AND ", conditions)}" : "";
+
+            sql.Replace("@DynamicFilter", dynamicFilter);
         }
     }
 }

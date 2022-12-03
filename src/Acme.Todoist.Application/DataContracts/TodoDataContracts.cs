@@ -17,6 +17,7 @@ namespace Acme.Todoist.Application.DataContracts
     namespace Responses
     {
         public sealed record TodoResponseData(
+            string Id,
             string Title,
             DateTime? DueDate,
             int Priority,

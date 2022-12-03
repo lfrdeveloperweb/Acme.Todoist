@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Acme.Todoist.Application.DataContracts.Responses;
-using Acme.Todoist.Commons.Models;
+﻿using Acme.Todoist.Commons.Models;
 using Acme.Todoist.Infrastructure.Commands;
 using Acme.Todoist.Infrastructure.Queries;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Acme.Todoist.Application.DataContracts
 {
     namespace Requests
     {
-       
+
     }
 
     namespace Responses

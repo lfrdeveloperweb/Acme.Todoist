@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{8C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Acme.Todoist.Core", "src\Acme.Todoist.Core\Acme.Todoist.Core.csproj", "{8CB87BE8-AE12-4E50-B6AE-58DFBE8499B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acme.Database", "database\Acme.Database\Acme.Database.csproj", "{5A8F4313-ECBA-48A6-8E69-8AEAC28EFC6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{8CB87BE8-AE12-4E50-B6AE-58DFBE8499B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CB87BE8-AE12-4E50-B6AE-58DFBE8499B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CB87BE8-AE12-4E50-B6AE-58DFBE8499B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A8F4313-ECBA-48A6-8E69-8AEAC28EFC6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A8F4313-ECBA-48A6-8E69-8AEAC28EFC6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A8F4313-ECBA-48A6-8E69-8AEAC28EFC6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A8F4313-ECBA-48A6-8E69-8AEAC28EFC6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{0AC44AAE-10A2-462F-9F25-F3536DF2B127} = {1C08620A-F94D-45A9-85A7-51B0E9E5C427}
 		{ABF319AC-58F9-4DE4-9957-AE00117FE152} = {1C08620A-F94D-45A9-85A7-51B0E9E5C427}
 		{8CB87BE8-AE12-4E50-B6AE-58DFBE8499B0} = {1C08620A-F94D-45A9-85A7-51B0E9E5C427}
+		{5A8F4313-ECBA-48A6-8E69-8AEAC28EFC6D} = {8C701FB1-FAC9-4DFA-8EAF-09D985494A00}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E095AEDE-A06E-407C-B945-9103B0995C06}
