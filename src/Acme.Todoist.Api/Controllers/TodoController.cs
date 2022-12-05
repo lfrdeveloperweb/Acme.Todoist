@@ -21,7 +21,7 @@ namespace Acme.Todoist.Api.Controllers
         }
 
         /// <summary>
-        /// Get entry by id.
+        /// Get task by id.
         /// </summary>
         //[Permission(PermissionType.OrderRead)]
         [HttpGet("{id}")]
@@ -29,7 +29,7 @@ namespace Acme.Todoist.Api.Controllers
             BuildActionResult(await _service.GetAsync(id, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
         /// <summary>
-        /// Search orders by filter.
+        /// Search task by filter.
         /// </summary>
         //[ResourceAuthorization(PermissionType.OrderFull, PermissionType.OrderRead)]
         [HttpPost("search")]

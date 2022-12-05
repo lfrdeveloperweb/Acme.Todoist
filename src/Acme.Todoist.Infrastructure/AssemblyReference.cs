@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Acme.Todoist.Application
+namespace Acme.Todoist.Infrastructure
 {
     public static class AssemblyReference
     {

@@ -1,18 +1,17 @@
-﻿using Acme.Todoist.Core.Repositories;
+﻿using Acme.Todoist.Commons.Models.Security;
+using Acme.Todoist.Core.Repositories;
+using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Infrastructure.Commands;
 using Acme.Todoist.Infrastructure.Models;
 using Acme.Todoist.Infrastructure.Utils;
 using AutoMapper;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentValidation;
-using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Commons.Models.Security;
-using Acme.Todoist.Infrastructure.Extensions;
-using System.ComponentModel.DataAnnotations;
 
 namespace Acme.Todoist.Core.Features.Commands
 {
@@ -20,6 +19,7 @@ namespace Acme.Todoist.Core.Features.Commands
     {
         public sealed record Command(
             string Title,
+            string Description,
             string ProjectId,
             DateTime? DueDate,
             [Required] int Priority,
@@ -43,14 +43,13 @@ namespace Acme.Todoist.Core.Features.Commands
                 _dateTimeProvider = dateTimeProvider;
             }
 
-            protected override async Task<CommandResult<Todo>> ProcessCommandAsync(Command command,
-                CancellationToken cancellationToken)
+            protected override async Task<CommandResult<Todo>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
             {
                 var todo = Mapper.Map<Todo>(command);
 
                 todo.Id = _keyGenerator.Generate();
                 todo.CreatedBy = Membership.From(command.OperationContext.Identity);
-                todo.CreatedAt = _dateTimeProvider.BrasiliaNow;
+                todo.CreatedAt = _dateTimeProvider.UtcNow;
 
                 await UnitOfWork.TodoRepository.CreateAsync(todo, cancellationToken);
 
@@ -76,8 +75,11 @@ namespace Acme.Todoist.Core.Features.Commands
 
             private void SetupValidation()
             {
-                Transform(it => it.Title, it => it.Trim())
-                    .NotNullOrEmpty();
+                //Transform(it => it.Title, it => it.Trim())
+                //    .NotNullOrEmpty();
+
+                //Transform(it => it.Description, it => it.Trim())
+                //    .NotNullOrEmpty();
 
                 //RuleFor(command => command.Level)
                 //    .NotNullOrEmpty()
@@ -94,8 +96,7 @@ namespace Acme.Todoist.Core.Features.Commands
             /// <summary>
             /// Validate if can create Todo.
             /// </summary>
-            private Task CanCreate(Command command, ValidationContext<Command> validationContext,
-                CancellationToken cancellationToken)
+            private Task CanCreate(Command command, ValidationContext<Command> validationContext, CancellationToken cancellationToken)
             {
                 //if (!RequestContext.Membership.Roles.Contains(Common.Models.Security.Role.Manager) && !RequestContext.Membership.IsSuperAdmin)
                 //{

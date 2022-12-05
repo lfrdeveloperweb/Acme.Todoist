@@ -7,7 +7,7 @@ namespace Acme.Todoist.Infrastructure.Commands
 {
     public interface ICommandValidator<in TCommand>
     {
-        CommandValidationResult ValidateCommand(TCommand command);
+        Task<CommandValidationResult> ValidateCommandAsync(TCommand command);
     }
 
     public abstract class CommandValidator<TCommand> : AbstractValidator<TCommand>, ICommandValidator<TCommand>
@@ -22,9 +22,9 @@ namespace Acme.Todoist.Infrastructure.Commands
         /// <summary>
         /// Validate operation data contract.
         /// </summary>
-        public virtual CommandValidationResult ValidateCommand(TCommand request)
+        public virtual async Task<CommandValidationResult> ValidateCommandAsync(TCommand request)
         {
-            var validationResult = Validate(request);
+            var validationResult = await ValidateAsync(request);
             if (validationResult.IsValid) return CommandValidationResult.Succeeded;
 
             var errors = ParseErrors(validationResult);

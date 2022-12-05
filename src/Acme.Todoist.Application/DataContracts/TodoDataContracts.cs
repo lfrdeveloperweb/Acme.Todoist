@@ -8,6 +8,7 @@ namespace Acme.Todoist.Application.DataContracts
     {
         public sealed record TodoForCreationRequest(
             [Required] string Title,
+            string Description,
             string ProjectId,
             DateTime? DueDate,
             [Required] int Priority,
@@ -19,6 +20,7 @@ namespace Acme.Todoist.Application.DataContracts
         public sealed record TodoResponseData(
             string Id,
             string Title,
+            string Description,
             DateTime? DueDate,
             int Priority,
             DateTimeOffset? CompletedAt,

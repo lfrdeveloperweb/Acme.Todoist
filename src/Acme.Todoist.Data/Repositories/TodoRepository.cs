@@ -17,12 +17,15 @@ namespace Acme.Todoist.Data.Repositories
         private const string BaseSelectCommandText = @"
                 SELECT t.todo_id as Id
                      , t.title
+                     , t.description
                      , t.project_id
                      , t.priority
                      , t.due_date
                      , t.completed_at
-                     , t.created_at
+                     , t.created_at                
                      --, t.created_by
+                     , t.updated_at                
+                     --, t.updated_by
                   FROM todo t";
 
         public TodoRepository(IDbConnector dbConnector) : base(dbConnector) { }
@@ -70,11 +73,12 @@ namespace Acme.Todoist.Data.Repositories
 
         public Task CreateAsync(Todo todo, CancellationToken cancellationToken)
         {
-            const string query = @"
-                INSERT INTO Course
+            const string commandText = @"
+                INSERT INTO todo
                 (
                     todo_id,
                     title,
+                    description,
                     project_id,
                     priority,
                     due_date,
@@ -85,6 +89,7 @@ namespace Acme.Todoist.Data.Repositories
                 (
                     @Id,
                     @Title,
+                    @Description,
                     @ProjectId,
                     @Priority,
                     @DueDate,
@@ -92,15 +97,41 @@ namespace Acme.Todoist.Data.Repositories
                     @CreatedBy
                 );";
 
-            return ExecuteWithTransactionAsync(query, new
+            return ExecuteWithTransactionAsync(commandText, new
             {
                 Id = todo.Id,
                 Title = todo.Title,
+                Description = todo.Description,
                 ProjectId = todo.Project?.Id,
                 Priority = todo.Priority,
                 DueDate = todo.DueDate,
                 CreatedAt = todo.CreatedAt,
                 CreatedBy = todo.CreatedBy?.MembershipId
+            }, cancellationToken);
+        }
+
+        public Task UpdateAsync(Todo todo, CancellationToken cancellationToken)
+        {
+            const string commandText = @"
+                UPDATE todo
+                   SET title = @Title
+                     , description = @Description
+                     , project_id = @ProjectId
+                     , priority = @Priority
+                     , due_date = @DueDate
+                     , updated_by = @UpdatedBy
+                     , updated_at = @UpdatedAt;";
+
+            return ExecuteWithTransactionAsync(commandText, new
+            {
+                Id = todo.Id,
+                Title = todo.Title,
+                Description = todo.Description,
+                ProjectId = todo.Project?.Id,
+                Priority = todo.Priority,
+                DueDate = todo.DueDate,
+                UpdatedAt = todo.UpdatedAt,
+                UpdatedBy = todo.UpdatedBy?.MembershipId
             }, cancellationToken);
         }
 

@@ -11,8 +11,9 @@ namespace Acme.Todoist.Core.Features.Queries
 {
     public static class SearchProjectsPaginated
     {
-        public record Query(PagingParameters PagingParameters, OperationContext OperationContext)
-            : PaginatedQuery<PaginatedQueryResult<Project>, Project>(PagingParameters, OperationContext);
+        public record Query(
+                PagingParameters PagingParameters, 
+                OperationContext OperationContext) : PaginatedQuery<PaginatedQueryResult<Project>, Project>(PagingParameters, OperationContext);
 
         public sealed class QueryHandler : IQueryHandler<Query, PaginatedQueryResult<Project>>
         {

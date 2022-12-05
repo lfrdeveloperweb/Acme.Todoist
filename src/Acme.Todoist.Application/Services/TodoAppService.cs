@@ -37,6 +37,7 @@ namespace Acme.Todoist.Application.Services
         {
             var command = new CreateTodo.Command(
                 request.Title,
+                request.Description,
                 request.ProjectId,
                 request.DueDate,
                 request.Priority,

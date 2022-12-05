@@ -1,8 +1,4 @@
-﻿using Acme.Todoist.Application.Services;
-using Acme.Todoist.Core.Repositories;
-using Acme.Todoist.Data;
-using Acme.Todoist.Infrastructure.Utils;
-using Acme.Todoist.IoC.Modules;
+﻿using Acme.Todoist.IoC.Modules;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,10 +16,10 @@ namespace Acme.Todoist.IoC
             var assemblies = new[]
             {
                 Assembly.Load("Acme.Todoist.Api"),
-                typeof(IUnitOfWork).Assembly,
-                typeof(AppServiceBase).Assembly,
-                typeof(UnitOfWork).Assembly,
-                typeof(IDateTimeProvider).Assembly,
+                Application.AssemblyReference.Assembly, 
+                Core.AssemblyReference.Assembly,
+                Data.AssemblyReference.Assembly,
+                Infrastructure.AssemblyReference.Assembly
             };
 
             builder

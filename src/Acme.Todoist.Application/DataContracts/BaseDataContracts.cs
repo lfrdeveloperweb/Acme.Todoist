@@ -1,10 +1,11 @@
 ﻿using Acme.Todoist.Commons.Models;
 using Acme.Todoist.Infrastructure.Commands;
 using Acme.Todoist.Infrastructure.Queries;
-using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
+using Newtonsoft.Json;
 
 namespace Acme.Todoist.Application.DataContracts
 {
@@ -28,11 +29,13 @@ namespace Acme.Todoist.Application.DataContracts
                 Reports = reports;
             }
 
+            [JsonIgnore]
             public int StatusCode { get; init; }
 
             public Report[] Reports { get; init; }
 
-            public bool IsSuccessStatusCode => StatusCode is >= 200 and <= 299;
+            [JsonIgnore]
+            public bool IsSuccessStatusCode => StatusCode is >= StatusCodes.Status200OK and < StatusCodes.Status300MultipleChoices;
             
             /// <summary>
             /// Create instance of <see cref="Response"/> with property State "<see cref="StatusCodes.Status200OK"/>".

@@ -41,10 +41,13 @@ namespace Acme.Todoist.Infrastructure.Commands
             {
                 await NormalizeCommand(command, cancellationToken);
 
-                var commandValidationResult = _validator?.ValidateCommand(command) ?? CommandValidationResult.Succeeded;
-                if (!commandValidationResult.IsValid)
+                if (_validator is not null)
                 {
-                    return CommandResult.UnprocessableEntity<TCommandResult>(commandValidationResult.Reports.ToArray());
+                    var commandValidationResult = await _validator.ValidateCommandAsync(command);
+                    if (!commandValidationResult.IsValid)
+                    {
+                        return CommandResult.UnprocessableEntity<TCommandResult>(commandValidationResult.Reports.ToArray());
+                    }
                 }
 
                 commandResult = await ProcessCommandAsync(command, cancellationToken);
