@@ -43,12 +43,6 @@ namespace Acme.Todoist.Infrastructure.Commands
         /// Create instance of <see cref="CommandResult"/> with property status code 200 OK.
         /// </summary>
         /// <returns>Instance of <see cref="CommandResult"/></returns>
-        public static Task<CommandResult> OkAsync() => Task.FromResult(new CommandResult(StatusCodes.Status200OK));
-
-        /// <summary>
-        /// Create instance of <see cref="CommandResult"/> with property status code 200 OK.
-        /// </summary>
-        /// <returns>Instance of <see cref="CommandResult"/></returns>
         public static CommandResult<T> Ok<T>(T data) => new(data, StatusCodes.Status200OK);
 
         /// <summary>

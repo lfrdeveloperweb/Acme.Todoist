@@ -1,13 +1,6 @@
-﻿using Acme.Todoist.Commons.Models.Security;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acme.Todoist.Application.DataContracts.Responses;
+﻿using Acme.Todoist.Application.DataContracts.Responses;
 using Acme.Todoist.Domain.Models;
+using AutoMapper;
 
 namespace Acme.Todoist.Application.Mappers
 {
@@ -27,6 +20,7 @@ namespace Acme.Todoist.Application.Mappers
         private void TodoMappers()
         {
             CreateMap<Todo, TodoResponseData>();
+            CreateMap<TodoComment, TodoCommentResponseData>();
         }
     }
 }

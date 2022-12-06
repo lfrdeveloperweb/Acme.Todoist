@@ -13,6 +13,9 @@ namespace Acme.Todoist.Application.DataContracts
             DateTime? DueDate,
             [Required] int Priority,
             ICollection<string> Tags);
+
+        public sealed record TodoCommentForCreationRequest(
+            string Description);
     }
 
     namespace Responses
@@ -24,6 +27,11 @@ namespace Acme.Todoist.Application.DataContracts
             DateTime? DueDate,
             int Priority,
             DateTimeOffset? CompletedAt,
+            DateTimeOffset CreatedAt);
+
+        public sealed record TodoCommentResponseData(
+            string Id,
+            string Description,
             DateTimeOffset CreatedAt);
     }
 }

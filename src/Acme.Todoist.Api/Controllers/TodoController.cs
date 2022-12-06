@@ -43,5 +43,21 @@ namespace Acme.Todoist.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken) =>
             BuildActionResult(await _service.DeleteAsync(id, base.OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
+
+
+        /// <summary>
+        /// Search comments by filter.
+        /// </summary>
+        [HttpPost("{todoId}/comments/search")]
+        public async Task<IActionResult> Search(string todoId, PagingParameters pagingParameters, CancellationToken cancellationToken) =>
+            BuildActionResult(await _service.SearchCommentsAsync(todoId, pagingParameters, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
+
+        [HttpPost("{todoId}/comments")]
+        public async Task<IActionResult> Post(string todoId, [FromBody] TodoCommentForCreationRequest request, CancellationToken cancellationToken) =>
+            BuildActionResult(await _service.CreateCommentAsync(todoId, request, base.OperationContextManager.GetContext(), cancellationToken));
+
+        [HttpDelete("{todoId}/comments/{id}")]
+        public async Task<IActionResult> Delete(string id, string todoId, CancellationToken cancellationToken) =>
+            BuildActionResult(await _service.DeleteCommentAsync(id, todoId, base.OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
     }
 }

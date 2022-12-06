@@ -67,6 +67,8 @@ namespace Acme.Todoist.Infrastructure.Commands
             //}
             catch (Exception ex)
             {
+                Logger.LogError(ex, ex.Message);
+
                 commandResult = CommandResult.InternalServerError<TCommandResult>(ex);
             }
             finally

@@ -32,6 +32,9 @@ namespace Acme.Todoist.Core.Mappers
             //        option.AllowNull();
             //        option.MapFrom(source => DateOnly.FromDateTime(source.DueDate.GetValueOrDefault()));
             //    });
+
+
+            CreateMap<CreateTodoComment.Command, TodoComment>();
         }
     }
 }
