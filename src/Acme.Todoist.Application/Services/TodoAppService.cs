@@ -41,12 +41,37 @@ public sealed class TodoAppService : AppServiceBase
             request.ProjectId,
             request.DueDate,
             request.Priority,
-            request.Tags,
+            request.Labels,
             operationContext);
 
         var result = await Dispatcher.Send(command, cancellationToken);
 
         return Response.From<Todo, TodoResponseData>(result, Mapper);
+    }
+
+    public async ValueTask<Response<TodoResponseData>> UpdateAsync(string id, TodoForUpdateRequest request, OperationContext operationContext, CancellationToken cancellationToken)
+    {
+        var command = new UpdateTodo.Command(
+            id,
+            request.Title,
+            request.Description,
+            request.ProjectId,
+            request.DueDate,
+            request.Priority,
+            request.Labels,
+            operationContext);
+
+        var result = await Dispatcher.Send(command, cancellationToken);
+
+        return Response.From<Todo, TodoResponseData>(result, Mapper);
+    }
+
+    public async ValueTask<Response> CloneAsync(string id, OperationContext operationContext, CancellationToken cancellationToken)
+    {
+        var command = new CloneTodo.Command(id, operationContext);
+        var result = await Dispatcher.Send(command, cancellationToken);
+
+        return Response.From(result);
     }
 
     public ValueTask<Response> DeleteAsync(string id, OperationContext operationContext, CancellationToken cancellationToken) => throw new System.NotImplementedException();

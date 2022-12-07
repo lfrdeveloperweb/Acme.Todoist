@@ -4,6 +4,7 @@ using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
 using Acme.Todoist.Infrastructure.Data;
 using Dapper;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -15,26 +16,27 @@ namespace Acme.Todoist.Data.Repositories
     public sealed class TodoRepository : Repository, ITodoRepository
     {
         private const string BaseSelectCommandText = @"
-                SELECT t.todo_id as Id
-                     , t.title
-                     , t.description
-                     , t.project_id
-                     , t.priority
-                     , t.due_date
-                     , t.completed_at
-                     , t.created_at                
-                     --, t.created_by
-                     , t.updated_at                
-                     --, t.updated_by
-                  FROM todo t";
+            SELECT t.todo_id as Id
+                 , t.title
+                 , t.description
+                 , t.project_id
+                 , t.priority
+                 , t.due_date
+                 , t.completed_at
+                 , t.created_at
+                 , t.updated_at
+                 , t.deleted_at  
+                 , t.created_by
+                 , t.updated_by                 
+              FROM todo t";
 
         private const string CommentBaseSelectCommandText = @"
-                SELECT c.todo_comment_id as Id
-                     , c.todo_id
-                     , c.description
-                     , c.created_at                
-                     --, c.created_by
-                  FROM todo_comment c";
+            SELECT c.todo_comment_id as Id
+                 , c.todo_id
+                 , c.description
+                 , c.created_at
+                 --, c.created_by                     
+              FROM todo_comment c";
 
         public TodoRepository(IDbConnector dbConnector) : base(dbConnector) { }
 
@@ -90,6 +92,7 @@ namespace Acme.Todoist.Data.Repositories
                     project_id,
                     priority,
                     due_date,
+                    labels,
                     created_at,
                     created_by
                 ) 
@@ -101,6 +104,7 @@ namespace Acme.Todoist.Data.Repositories
                     @ProjectId,
                     @Priority,
                     @DueDate,
+                    @Labels::json,
                     @CreatedAt,
                     @CreatedBy
                 );";
@@ -113,6 +117,7 @@ namespace Acme.Todoist.Data.Repositories
                 ProjectId = todo.Project?.Id,
                 Priority = todo.Priority,
                 DueDate = todo.DueDate,
+                Labels = JsonConvert.SerializeObject(todo.Labels, Formatting.None),
                 CreatedAt = todo.CreatedAt,
                 CreatedBy = todo.CreatedBy?.MembershipId
             }, cancellationToken);
@@ -127,8 +132,10 @@ namespace Acme.Todoist.Data.Repositories
                      , project_id = @ProjectId
                      , priority = @Priority
                      , due_date = @DueDate
+                     , labels = @Labels
                      , updated_by = @UpdatedBy
-                     , updated_at = @UpdatedAt;";
+                     , updated_at = @UpdatedAt
+                 WHERE todo_id = @Id;";
 
             return ExecuteWithTransactionAsync(commandText, new
             {
@@ -138,6 +145,7 @@ namespace Acme.Todoist.Data.Repositories
                 ProjectId = todo.Project?.Id,
                 Priority = todo.Priority,
                 DueDate = todo.DueDate,
+                Labels = JsonConvert.SerializeObject(todo.Labels, Formatting.None),
                 UpdatedAt = todo.UpdatedAt,
                 UpdatedBy = todo.UpdatedBy?.MembershipId
             }, cancellationToken);
@@ -145,9 +153,12 @@ namespace Acme.Todoist.Data.Repositories
 
         public Task DeleteAsync(Todo todo, CancellationToken cancellationToken)
         {
-            const string commandText = "DELETE FROM todo WHERE todo_id = @Id;";
+            const string commandText = @"
+                UPDATE todo
+                   SET deleted_at = CURRENT_TIMESTAMP
+                 WHERE todo_id = @Id;";
 
-            return ExecuteWithTransactionAsync(commandText, new { Id = todo.Id }, cancellationToken);
+            return ExecuteWithTransactionAsync(commandText, cancellationToken, cancellationToken);
         }
 
         /// <inheritdoc />

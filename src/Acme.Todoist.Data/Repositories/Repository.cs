@@ -25,7 +25,7 @@ namespace Acme.Todoist.Data.Repositories
             SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
         }
 
-    protected Repository(IDbConnector dbConnector)
+        protected Repository(IDbConnector dbConnector)
         {
             _dbConnector = dbConnector;
 
@@ -51,7 +51,7 @@ namespace Acme.Todoist.Data.Repositories
         /// <param name="parameters">SQL parameters.</param>
         /// <param name="cancellationToken">The cancellation token for this operation.</param>
         /// <returns>The first column of the first row of the result. If no records were selected, returns the default value for expected type.</returns>
-        protected Task<TResult> ExecuteScalarWithTransactionAsync<TResult>(string commandText, object parameters = null, CancellationToken cancellationToken = default) => 
+        protected Task<TResult> ExecuteScalarWithTransactionAsync<TResult>(string commandText, object parameters = null, CancellationToken cancellationToken = default) =>
             Connection.ExecuteScalarAsync<TResult>(new CommandDefinition(commandText, parameters, Transaction, cancellationToken: cancellationToken));
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Acme.Todoist.Data.Repositories
         /// <param name="commandText">SQL command to be executed.</param>
         /// <param name="parameters">SQL parameters.</param>
         /// <param name="cancellationToken">The cancellation token for this operation.</param>
-        protected Task ExecuteWithTransactionAsync(string commandText, object parameters = null, CancellationToken cancellationToken = default) => 
+        protected Task ExecuteWithTransactionAsync(string commandText, object parameters = null, CancellationToken cancellationToken = default) =>
             Connection.ExecuteAsync(new CommandDefinition(commandText, parameters, Transaction, cancellationToken: cancellationToken));
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Acme.Todoist.Data.Repositories
         /// <param name="parameters">SQL parameters.</param>
         /// <param name="cancellationToken">The cancellation token for this operation.</param>
         /// <returns>True if found, false otherwise.</returns>
-        protected Task<bool> ExistsWithTransactionAsync(string commandText, object parameters = null, CancellationToken cancellationToken = default) => 
+        protected Task<bool> ExistsWithTransactionAsync(string commandText, object parameters = null, CancellationToken cancellationToken = default) =>
             Connection.ExecuteScalarAsync<bool>(new CommandDefinition(commandText, parameters, Transaction, cancellationToken: cancellationToken));
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Acme.Todoist.Data.Repositories
         /// <param name="parameters">SQL parameters.</param>
         /// <param name="cancellationToken">The cancellation token for this operation.</param>
         /// <returns>List of records selected.</returns>
-        protected Task<IEnumerable<TResult>> ToListWithTransactionAsync<TResult>(string commandText, object parameters = null, CancellationToken cancellationToken = default) => 
+        protected Task<IEnumerable<TResult>> ToListWithTransactionAsync<TResult>(string commandText, object parameters = null, CancellationToken cancellationToken = default) =>
             Connection.QueryAsync<TResult>(new CommandDefinition(commandText, parameters, Transaction, cancellationToken: cancellationToken));
     }
 }

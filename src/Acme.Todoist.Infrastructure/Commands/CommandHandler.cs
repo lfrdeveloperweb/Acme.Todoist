@@ -41,7 +41,7 @@ namespace Acme.Todoist.Infrastructure.Commands
             {
                 await NormalizeCommand(command, cancellationToken);
 
-                if (_validator is not null)
+                if (!command.BypassValidation && _validator is not null)
                 {
                     var commandValidationResult = await _validator.ValidateCommandAsync(command);
                     if (!commandValidationResult.IsValid)

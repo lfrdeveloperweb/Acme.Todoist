@@ -12,7 +12,15 @@ namespace Acme.Todoist.Application.DataContracts
             string ProjectId,
             DateTime? DueDate,
             [Required] int Priority,
-            ICollection<string> Tags);
+            ICollection<string> Labels);
+
+        public sealed record TodoForUpdateRequest(
+            [Required] string Title,
+            string Description,
+            string ProjectId,
+            DateTime? DueDate,
+            [Required] int Priority,
+            ICollection<string> Labels);
 
         public sealed record TodoCommentForCreationRequest(
             string Description);

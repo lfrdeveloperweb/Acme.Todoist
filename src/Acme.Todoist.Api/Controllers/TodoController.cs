@@ -37,8 +37,16 @@ namespace Acme.Todoist.Api.Controllers
             BuildActionResult(await _service.SearchAsync(pagingParameters, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] TodoForCreationRequest request, CancellationToken cancellationToken) =>
+        public async Task<IActionResult> Create([FromBody] TodoForCreationRequest request, CancellationToken cancellationToken) =>
             BuildActionResult(await _service.CreateAsync(request, base.OperationContextManager.GetContext(), cancellationToken));
+
+        [HttpPost("{id}/clone")]
+        public async Task<IActionResult> Clone(string id, CancellationToken cancellationToken) =>
+            BuildActionResult(await _service.CloneAsync(id, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] TodoForUpdateRequest request, CancellationToken cancellationToken) =>
+            BuildActionResult(await _service.UpdateAsync(id, request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken) =>

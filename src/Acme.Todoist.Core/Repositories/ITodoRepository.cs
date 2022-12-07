@@ -19,6 +19,8 @@ namespace Acme.Todoist.Core.Repositories
 
         Task CreateAsync(Todo todo, CancellationToken cancellationToken);
 
+        Task UpdateAsync(Todo todo, CancellationToken cancellationToken);
+
         Task DeleteAsync(Todo todo, CancellationToken cancellationToken);
 
         Task<PaginatedResult<TodoComment>> ListCommentsPaginatedByFilterAsync(TodoCommentFilter filter, PagingParameters pagingParameters, CancellationToken cancellationToken);
