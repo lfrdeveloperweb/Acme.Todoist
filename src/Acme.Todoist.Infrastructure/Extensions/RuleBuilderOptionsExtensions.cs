@@ -1,4 +1,5 @@
-﻿using Acme.Todoist.Commons.Resources;
+﻿using System;
+using Acme.Todoist.Commons.Resources;
 using Acme.Todoist.Commons.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
@@ -42,7 +43,7 @@ namespace Acme.Todoist.Infrastructure.Extensions
         /// </summary>
         public static IRuleBuilderOptions<T, TProperty> WithMessageFromErrorCode<T, TProperty>(this IRuleBuilderOptions<T, TProperty> rule, ReportCodeType reportCodeType, Func<T, TProperty, object> func)
         {
-            return rule.WithMessageFromErrorCode(reportCodeType, (x, property) => new object[] { func(x, property) });
+            return rule.WithMessageFromErrorCode(reportCodeType, (x, property) => new [] { func(x, property) });
         }
 
         /// <summary>

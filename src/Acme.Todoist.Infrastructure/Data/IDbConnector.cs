@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using System;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Data;
 
 namespace Acme.Todoist.Infrastructure.Data

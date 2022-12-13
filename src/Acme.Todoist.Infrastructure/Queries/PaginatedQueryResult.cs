@@ -1,4 +1,5 @@
-﻿using Acme.Todoist.Commons.Models;
+﻿using System.Collections.Generic;
+using Acme.Todoist.Commons.Models;
 
 namespace Acme.Todoist.Infrastructure.Queries
 {

@@ -1,4 +1,7 @@
-﻿namespace Acme.Todoist.Commons.Models.Security
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Acme.Todoist.Commons.Models.Security
 {
     /// <summary>
     /// Represent a user.

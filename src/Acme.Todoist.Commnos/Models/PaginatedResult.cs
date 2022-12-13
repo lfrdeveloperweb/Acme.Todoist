@@ -1,4 +1,6 @@
-﻿namespace Acme.Todoist.Commons.Models
+﻿using System.Collections.Generic;
+
+namespace Acme.Todoist.Commons.Models
 {
     public abstract record PaginatedResult(long TotalRecords);
 

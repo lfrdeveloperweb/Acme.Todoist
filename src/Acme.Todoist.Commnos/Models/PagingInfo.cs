@@ -1,4 +1,6 @@
-﻿namespace Acme.Todoist.Commons.Models
+﻿using System;
+
+namespace Acme.Todoist.Commons.Models
 {
     /// <summary>
     /// Represent a paging info.

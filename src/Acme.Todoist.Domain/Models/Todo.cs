@@ -1,4 +1,7 @@
-﻿namespace Acme.Todoist.Domain.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace Acme.Todoist.Domain.Models
 {
     public sealed class Todo : EntityBase, ICloneable
     {
