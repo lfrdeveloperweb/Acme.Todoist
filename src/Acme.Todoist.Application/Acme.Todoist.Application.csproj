@@ -14,8 +14,4 @@
     <PackageReference Include="Destructurama.Attributed" Version="3.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Commands\Accounts\" />
-  </ItemGroup>
-
 </Project>

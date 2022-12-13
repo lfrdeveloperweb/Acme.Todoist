@@ -8,15 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Migrations\001_create_table_project.sql" />
-    <None Remove="Migrations\002_create_table_todo.sql" />
-    <None Remove="Migrations\003_create_table_todo_comment.sql" />
+    <None Remove="Migrations\001_create_table_user.sql" />
+    <None Remove="Migrations\011_create_table_project.sql" />
+    <None Remove="Migrations\012_create_table_todo.sql" />
+    <None Remove="Migrations\013_create_table_todo_comment.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\001_create_table_project.sql" />
-    <EmbeddedResource Include="Migrations\003_create_table_todo_comment.sql" />
-    <EmbeddedResource Include="Migrations\002_create_table_todo.sql" />
+    <EmbeddedResource Include="Migrations\001_create_table_user.sql" />
+    <EmbeddedResource Include="Migrations\011_create_table_project.sql" />
+    <EmbeddedResource Include="Migrations\013_create_table_todo_comment.sql" />
+    <EmbeddedResource Include="Migrations\012_create_table_todo.sql" />
   </ItemGroup>
 
 </Project>

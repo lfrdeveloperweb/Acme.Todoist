@@ -10,6 +10,11 @@ namespace Acme.Todoist.Application.Repositories
     public interface IUnitOfWork : IUnitOfWorkBase, IDisposable
     {
         /// <summary>
+        /// Repository to handle information about <see cref="User"/>
+        /// </summary>
+        IUserRepository UserRepository { get; }
+
+        /// <summary>
         /// Repository to handle information about <see cref="Project"/>
         /// </summary>
         IProjectRepository ProjectRepository { get; }
