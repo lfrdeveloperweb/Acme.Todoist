@@ -1,28 +1,26 @@
-﻿using Acme.Todoist.Commons.Models.Security;
-using Acme.Todoist.Core.Repositories;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Commons.Models.Security;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Infrastructure.Commands;
-using Acme.Todoist.Infrastructure.Extensions;
 using Acme.Todoist.Infrastructure.Models;
 using Acme.Todoist.Infrastructure.Utils;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Acme.Todoist.Core.Features.Commands;
+namespace Acme.Todoist.Application.Features.Commands.Todos;
 
-public static class CreateProject
+public static class CreateTodoComment
 {
     public sealed record Command(
-        string Title,
-        string Color,
-        OperationContext Context) : Command<CommandResult<Project>>(Context);
+        string TodoId,
+        string Description,
+        OperationContext Context) : Command<CommandResult<TodoComment>>(Context);
 
-    public sealed class CommandHandler : CommandHandler<Command, CommandResult<Project>, IUnitOfWork>
+    public sealed class CommandHandler : CommandHandler<Command, CommandResult<TodoComment>, IUnitOfWork>
     {
-        private readonly IKeyGenerator _keyGenerator;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public CommandHandler(
@@ -30,29 +28,27 @@ public static class CreateProject
             IUnitOfWork unitOfWork,
             ICommandValidator<Command> validator,
             IMapper mapper,
-            IKeyGenerator keyGenerator,
             IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator, mapper: mapper)
         {
-            _keyGenerator = keyGenerator;
             _dateTimeProvider = dateTimeProvider;
         }
 
-        protected override async Task<CommandResult<Project>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
+        protected override async Task<CommandResult<TodoComment>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
         {
-            var project = Mapper.Map<Project>(command);
+            var comment = Mapper.Map<TodoComment>(command);
 
-            project.Id = _keyGenerator.Generate();
-            project.CreatedBy = Membership.From(command.OperationContext.Identity);
-            project.CreatedAt = _dateTimeProvider.BrasiliaNow;
+            comment.TodoId = command.TodoId;
+            comment.CreatedBy = Membership.From(command.OperationContext.Identity);
+            comment.CreatedAt = _dateTimeProvider.UtcNow;
 
-            await UnitOfWork.ProjectRepository.CreateAsync(project, cancellationToken);
+            await UnitOfWork.TodoRepository.CreateCommentAsync(comment, cancellationToken);
 
-            return CommandResult.Created(project);
+            return CommandResult.Created(comment);
         }
     }
 
     /// <summary>
-    /// Validator to validate request information about <see cref="Project"/>.
+    /// Validator to validate request information about <see cref="TodoComment"/>.
     /// </summary>
     public sealed class CommandValidator : CommandValidator<Command>
     {
@@ -69,15 +65,26 @@ public static class CreateProject
 
         private void SetupValidation()
         {
-            Transform(it => it.Title, it => it.Trim())
-                .NotNullOrEmpty();
+            //Transform(it => it.Title, it => it.Trim())
+            //    .NotNullOrEmpty();
+
+            //Transform(it => it.Description, it => it.Trim())
+            //    .NotNullOrEmpty();
+
+            //RuleFor(command => command.Level)
+            //    .NotNullOrEmpty()
+            //    .Must(level => Enum.IsDefined(typeof(CourseLevel), level));
+            //.WithMessageFromErrorCode(ReportCodeType.InvalidCourseLevel);
+
+            //RuleFor(request => request.Name)
+            //    .NotNullOrEmpty();
 
             RuleFor(request => request)
                 .CustomAsync(CanCreate);
         }
 
         /// <summary>
-        /// Validate if can create Project.
+        /// Validate if can create TodoComment.
         /// </summary>
         private Task CanCreate(Command command, ValidationContext<Command> validationContext, CancellationToken cancellationToken)
         {

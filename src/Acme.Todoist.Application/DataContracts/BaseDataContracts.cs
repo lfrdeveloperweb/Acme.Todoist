@@ -1,10 +1,10 @@
-﻿using Acme.Todoist.Commons.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Acme.Todoist.Commons.Models;
 using Acme.Todoist.Infrastructure.Commands;
 using Acme.Todoist.Infrastructure.Queries;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace Acme.Todoist.Application.DataContracts
@@ -98,5 +98,12 @@ namespace Acme.Todoist.Application.DataContracts
 
             public PagingInfo PagingInfo { get; init; }
         }
+
+        /// <summary>
+        /// Representation of a domain response.
+        /// </summary>
+        /// <param name="Id">Identifier of domain.</param>
+        /// <param name="Name">Name</param>
+        public record IdentityNamedResponse(string Id, string Name);
     }
 }

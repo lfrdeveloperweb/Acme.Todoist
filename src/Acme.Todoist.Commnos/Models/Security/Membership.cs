@@ -3,8 +3,16 @@
     /// <summary>
     /// Represent a membership.
     /// </summary>
-    public sealed record Membership(string MembershipId, string Name)
+    public sealed record Membership
     {
-        public static Membership From(IIdentityContext identityContext) => new(identityContext.Id, identityContext.Name);
+        public string Id { get; init; }
+
+        public string Name { get; init; }
+
+        public static Membership From(IIdentityContext identityContext) => new()
+        {
+            Id = identityContext.Id,
+            Name = identityContext.Name
+        };
     }
 }

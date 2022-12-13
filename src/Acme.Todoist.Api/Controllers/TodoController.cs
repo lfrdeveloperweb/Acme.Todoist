@@ -1,10 +1,10 @@
 ﻿using Acme.Todoist.Api.Services;
-using Acme.Todoist.Application.DataContracts.Requests;
 using Acme.Todoist.Application.Services;
 using Acme.Todoist.Commons.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Application.DataContracts.Requests;
 
 namespace Acme.Todoist.Api.Controllers
 {

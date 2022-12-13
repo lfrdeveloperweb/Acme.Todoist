@@ -1,22 +1,26 @@
 ﻿using Acme.Todoist.Commons.Models;
-using Acme.Todoist.Core.Repositories;
+using Acme.Todoist.Commons.Models.Security;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
 using Acme.Todoist.Infrastructure.Data;
 using Dapper;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Application.Repositories;
 
 namespace Acme.Todoist.Data.Repositories
 {
     public sealed class TodoRepository : Repository, ITodoRepository
     {
+        private const string SplitOn = "id,labels,id,id";
+
         private const string BaseSelectCommandText = @"
-            SELECT t.todo_id as Id
+            SELECT t.todo_id as id
                  , t.title
                  , t.description
                  , t.project_id
@@ -25,27 +29,38 @@ namespace Acme.Todoist.Data.Repositories
                  , t.completed_at
                  , t.created_at
                  , t.updated_at
-                 , t.deleted_at  
-                 , t.created_by
-                 , t.updated_by                 
+                 , t.deleted_at
+                 , t.labels
+                 , t.created_by as id
+                 , '' as name
+                 , t.updated_by as id
+                 , '' as name
               FROM todo t";
 
         private const string CommentBaseSelectCommandText = @"
-            SELECT c.todo_comment_id as Id
+            SELECT c.todo_comment_id as id
                  , c.todo_id
                  , c.description
                  , c.created_at
-                 --, c.created_by                     
+                 , c.created_by as id
+                 , '' as name
               FROM todo_comment c";
 
         public TodoRepository(IDbConnector dbConnector) : base(dbConnector) { }
 
         /// <inheritdoc />
-        public Task<Todo> GetByIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<Todo> GetByIdAsync(string id, CancellationToken cancellationToken)
         {
             const string commandText = $"{BaseSelectCommandText} WHERE t.todo_id = @Id";
 
-            return FirstOrDefaultWithTransaction<Todo>(commandText, new { Id = id }, cancellationToken);
+            var query = await base.Connection.QueryAsync<Todo, string, Membership, Membership, Todo>( 
+                sql: commandText,
+                map: MapProperties,
+                param: new { Id = id },
+                transaction: base.Transaction,
+                splitOn: SplitOn);
+
+            return query.FirstOrDefault();
         }
         
         public async Task<PaginatedResult<Todo>> ListPaginatedByFilterAsync(TodoFilter filter, PagingParameters pagingParameters, CancellationToken cancellationToken)
@@ -68,7 +83,7 @@ namespace Acme.Todoist.Data.Repositories
                 new CommandDefinition(commandText.ToString(), parameters, Transaction, cancellationToken: cancellationToken));
 
             var totalRecords = await multiQuery.ReadSingleAsync<int>();
-            var data = multiQuery.Read<Todo>();
+            var data = multiQuery.Read<Todo, string, Membership, Membership, Todo>(MapProperties, splitOn: SplitOn);
 
             return new PaginatedResult<Todo>(data.ToList(), totalRecords);
         }
@@ -119,7 +134,7 @@ namespace Acme.Todoist.Data.Repositories
                 DueDate = todo.DueDate,
                 Labels = JsonConvert.SerializeObject(todo.Labels, Formatting.None),
                 CreatedAt = todo.CreatedAt,
-                CreatedBy = todo.CreatedBy?.MembershipId
+                CreatedBy = todo.CreatedBy?.Id
             }, cancellationToken);
         }
 
@@ -147,7 +162,7 @@ namespace Acme.Todoist.Data.Repositories
                 DueDate = todo.DueDate,
                 Labels = JsonConvert.SerializeObject(todo.Labels, Formatting.None),
                 UpdatedAt = todo.UpdatedAt,
-                UpdatedBy = todo.UpdatedBy?.MembershipId
+                UpdatedBy = todo.UpdatedBy?.Id
             }, cancellationToken);
         }
 
@@ -162,11 +177,18 @@ namespace Acme.Todoist.Data.Repositories
         }
 
         /// <inheritdoc />
-        public Task<TodoComment> GetCommentByIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<TodoComment> GetCommentByIdAsync(string id, CancellationToken cancellationToken)
         {
             const string commandText = $"{CommentBaseSelectCommandText} WHERE c.todo_comment_id = @Id";
 
-            return FirstOrDefaultWithTransaction<TodoComment>(commandText, new { Id = id }, cancellationToken);
+            var query = await base.Connection.QueryAsync<TodoComment, Membership, TodoComment>(
+                sql: commandText,
+                map: MapProperties,
+                param: new { Id = id },
+                transaction: base.Transaction,
+                splitOn: SplitOn);
+
+            return query.FirstOrDefault();
         }
 
         public async Task<PaginatedResult<TodoComment>> ListCommentsPaginatedByFilterAsync(TodoCommentFilter filter, PagingParameters pagingParameters, CancellationToken cancellationToken)
@@ -194,12 +216,11 @@ namespace Acme.Todoist.Data.Repositories
             return new PaginatedResult<TodoComment>(data.ToList(), totalRecords);
         }
 
-        public Task CreateCommentAsync(string todoId, TodoComment comment, CancellationToken cancellationToken)
+        public async Task CreateCommentAsync(TodoComment comment, CancellationToken cancellationToken)
         {
             const string commandText = @"
                 INSERT INTO todo_comment
                 (
-                    todo_comment_id,
                     todo_id,
                     description,
                     created_at,
@@ -207,20 +228,20 @@ namespace Acme.Todoist.Data.Repositories
                 ) 
                 VALUES 
                 (
-                    @Id,
                     @TodoId,
                     @Description,
                     @CreatedAt,
                     @CreatedBy
-                );";
+                )
+                RETURNING todo_comment_id;";
 
-            return ExecuteWithTransactionAsync(commandText, new
+            comment.Id = await ExecuteScalarWithTransactionAsync<int>(commandText, new
             {
                 Id = comment.Id,
-                TodoId = todoId,
+                TodoId = comment.TodoId,
                 Description = comment.Description,
                 CreatedAt = comment.CreatedAt,
-                CreatedBy = comment.CreatedBy?.MembershipId
+                CreatedBy = comment.CreatedBy?.Id
             }, cancellationToken);
         }
 
@@ -257,6 +278,26 @@ namespace Acme.Todoist.Data.Repositories
             var dynamicFilter = conditions.Any() ? $" WHERE {string.Join(" AND ", conditions)}" : "";
 
             sql.Replace("@DynamicFilter", dynamicFilter);
+        }
+
+        private static Todo MapProperties(Todo todo, string labels, Membership creator, Membership updater)
+        {
+            if (labels is not null)
+            {
+                todo.Labels = JsonConvert.DeserializeObject<ICollection<string>>(labels);
+            }
+
+            todo.CreatedBy = creator;
+            todo.UpdatedBy = updater;
+
+            return todo;
+        }
+
+        private static TodoComment MapProperties(TodoComment comment, Membership creator)
+        {
+            comment.CreatedBy = creator;
+
+            return comment;
         }
     }
 }

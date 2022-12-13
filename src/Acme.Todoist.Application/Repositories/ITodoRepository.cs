@@ -1,10 +1,10 @@
-﻿using Acme.Todoist.Commons.Models;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Commons.Models;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Acme.Todoist.Core.Repositories
+namespace Acme.Todoist.Application.Repositories
 {
     public interface ITodoRepository
     {
@@ -27,7 +27,7 @@ namespace Acme.Todoist.Core.Repositories
 
         Task<TodoComment> GetCommentByIdAsync(string id, CancellationToken cancellationToken);
 
-        Task CreateCommentAsync(string todoId, TodoComment comment, CancellationToken cancellationToken);
+        Task CreateCommentAsync(TodoComment comment, CancellationToken cancellationToken);
 
         Task DeleteCommentAsync(TodoComment comment, CancellationToken cancellationToken);
     }

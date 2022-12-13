@@ -4,7 +4,7 @@ using Acme.Todoist.Commons.Models;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
 
-namespace Acme.Todoist.Core.Repositories;
+namespace Acme.Todoist.Application.Repositories;
 
 public interface IProjectRepository
 {

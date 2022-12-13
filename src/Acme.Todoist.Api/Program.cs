@@ -15,6 +15,7 @@ using Serilog;
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,7 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
-    InjectorBootstrapper.Inject(containerBuilder, builder.Configuration, builder.Services));
+    InjectorBootstrapper.Inject(containerBuilder, builder.Configuration, builder.Services, Assembly.GetExecutingAssembly()));
 
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
@@ -59,6 +60,7 @@ builder.Services.AddControllers(options =>
     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
     options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    options.SerializerSettings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
 
     JsonConvert.DefaultSettings = () => new JsonSerializerSettings
     {
@@ -67,6 +69,7 @@ builder.Services.AddControllers(options =>
         NullValueHandling = options.SerializerSettings.NullValueHandling,
         DateFormatHandling = options.SerializerSettings.DateFormatHandling,
         ReferenceLoopHandling = options.SerializerSettings.ReferenceLoopHandling,
+        ConstructorHandling = options.SerializerSettings.ConstructorHandling,
     };
 });
 
@@ -78,8 +81,8 @@ builder.Services.AddSwaggerGen(opt =>
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "ACME - Todoist", Version = "v1" });
 });
 
-builder.Services.AddMediatR(Acme.Todoist.Application.AssemblyReference.Assembly, Acme.Todoist.Core.AssemblyReference.Assembly);
-builder.Services.AddAutoMapper(Acme.Todoist.Application.AssemblyReference.Assembly, Acme.Todoist.Core.AssemblyReference.Assembly);
+builder.Services.AddMediatR(Acme.Todoist.Application.AssemblyReference.Assembly);
+builder.Services.AddAutoMapper(Acme.Todoist.Application.AssemblyReference.Assembly);
 
 var app = builder.Build();
 

@@ -1,13 +1,13 @@
-﻿using Acme.Todoist.Core.Repositories;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Application.Repositories;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Infrastructure.Commands;
 using Acme.Todoist.Infrastructure.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Acme.Todoist.Core.Features.Commands;
+namespace Acme.Todoist.Application.Features.Commands.Todos;
 
 public static class CloneTodo
 {

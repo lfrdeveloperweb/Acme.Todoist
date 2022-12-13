@@ -1,8 +1,8 @@
-﻿using Acme.Todoist.Domain.Models;
+﻿using System;
+using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Infrastructure.Data;
-using System;
 
-namespace Acme.Todoist.Core.Repositories
+namespace Acme.Todoist.Application.Repositories
 {
     /// <summary>
     /// Unit of work of repositories.

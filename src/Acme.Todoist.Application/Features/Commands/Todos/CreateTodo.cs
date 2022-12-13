@@ -1,24 +1,23 @@
-﻿using Acme.Todoist.Commons.Models.Security;
-using Acme.Todoist.Core.Repositories;
-using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Infrastructure.Commands;
-using Acme.Todoist.Infrastructure.Extensions;
-using Acme.Todoist.Infrastructure.Models;
-using Acme.Todoist.Infrastructure.Utils;
-using AutoMapper;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Commons.Models.Security;
+using Acme.Todoist.Domain.Models;
+using Acme.Todoist.Infrastructure.Commands;
+using Acme.Todoist.Infrastructure.Models;
+using Acme.Todoist.Infrastructure.Utils;
+using AutoMapper;
+using FluentValidation;
+using Microsoft.Extensions.Logging;
 
-namespace Acme.Todoist.Core.Features.Commands
+namespace Acme.Todoist.Application.Features.Commands.Todos
 {
-    public static class UpdateTodo
+    public static class CreateTodo
     {
         public sealed record Command(
-            string Id,
             string Title,
             string Description,
             string ProjectId,
@@ -30,6 +29,7 @@ namespace Acme.Todoist.Core.Features.Commands
 
         public sealed class CommandHandler : CommandHandler<Command, CommandResult<Todo>, IUnitOfWork>
         {
+            private readonly IKeyGenerator _keyGenerator;
             private readonly IDateTimeProvider _dateTimeProvider;
 
             public CommandHandler(
@@ -37,23 +37,20 @@ namespace Acme.Todoist.Core.Features.Commands
                 IUnitOfWork unitOfWork,
                 ICommandValidator<Command> validator,
                 IMapper mapper,
+                IKeyGenerator keyGenerator,
                 IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator, mapper: mapper)
             {
+                _keyGenerator = keyGenerator;
                 _dateTimeProvider = dateTimeProvider;
             }
 
             protected override async Task<CommandResult<Todo>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
             {
-                var todo = await UnitOfWork.TodoRepository.GetByIdAsync(command.Id, cancellationToken);
-                if (todo is null)
-                {
-                    return CommandResult.NotFound<CommandResult<Todo>>();
-                }
+                var todo = Mapper.Map<Todo>(command);
 
-                Mapper.Map(command, todo);
-
-                todo.UpdatedBy = Membership.From(command.OperationContext.Identity);
-                todo.UpdatedAt = _dateTimeProvider.UtcNow;
+                todo.Id = _keyGenerator.Generate();
+                todo.CreatedBy = Membership.From(command.OperationContext.Identity);
+                todo.CreatedAt = _dateTimeProvider.UtcNow;
 
                 await UnitOfWork.TodoRepository.CreateAsync(todo, cancellationToken);
 
@@ -79,8 +76,36 @@ namespace Acme.Todoist.Core.Features.Commands
 
             private void SetupValidation()
             {
-                RuleFor(request => request.Title)
-                    .NotNullOrEmpty();
+                //Transform(it => it.Title, it => it.Trim())
+                //    .NotNullOrEmpty();
+
+                //Transform(it => it.Description, it => it.Trim())
+                //    .NotNullOrEmpty();
+
+                //RuleFor(command => command.Level)
+                //    .NotNullOrEmpty()
+                //    .Must(level => Enum.IsDefined(typeof(CourseLevel), level));
+                //.WithMessageFromErrorCode(ReportCodeType.InvalidCourseLevel);
+
+                //RuleFor(request => request.Name)
+                //    .NotNullOrEmpty();
+
+                RuleFor(request => request)
+                    .CustomAsync(CanCreate);
+            }
+
+            /// <summary>
+            /// Validate if can create Todo.
+            /// </summary>
+            private Task CanCreate(Command command, ValidationContext<Command> validationContext, CancellationToken cancellationToken)
+            {
+                //if (!RequestContext.Membership.Roles.Contains(Common.Models.Security.Role.Manager) && !RequestContext.Membership.IsSuperAdmin)
+                //{
+                //    validationContext.AddFailure("User", ReportCodeType.OnlyManagerIsAllowedToDoThisOperation);
+                //    return;
+                //}
+
+                return Task.CompletedTask;
             }
         }
     }

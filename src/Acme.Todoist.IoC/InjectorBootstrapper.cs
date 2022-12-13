@@ -11,13 +11,12 @@ namespace Acme.Todoist.IoC
         /// <summary>
         /// Makes use of Autofac to set up the service provider, bringing together Autofac registrations and ASP.NET Core framework registrations.
         /// </summary>
-        public static void Inject(ContainerBuilder builder, IConfiguration configuration, IServiceCollection services = null)
+        public static void Inject(ContainerBuilder builder, IConfiguration configuration, IServiceCollection services, Assembly apiAssembly)
         {
             var assemblies = new[]
             {
-                Assembly.Load("Acme.Todoist.Api"),
+                apiAssembly,
                 Application.AssemblyReference.Assembly, 
-                Core.AssemblyReference.Assembly,
                 Data.AssemblyReference.Assembly,
                 Infrastructure.AssemblyReference.Assembly
             };

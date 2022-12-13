@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Acme.Todoist.Application\Acme.Todoist.Application.csproj" />
-    <ProjectReference Include="..\Acme.Todoist.Core\Acme.Todoist.Core.csproj" />
     <ProjectReference Include="..\Acme.Todoist.Data\Acme.Todoist.Data.csproj" />
     <ProjectReference Include="..\Acme.Todoist.Infrastructure\Acme.Todoist.Infrastructure.csproj" />
   </ItemGroup>

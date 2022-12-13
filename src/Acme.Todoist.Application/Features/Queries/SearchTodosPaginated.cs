@@ -1,13 +1,13 @@
-﻿using Acme.Todoist.Commons.Models;
-using Acme.Todoist.Core.Repositories;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Commons.Models;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
 using Acme.Todoist.Infrastructure.Models;
 using Acme.Todoist.Infrastructure.Queries;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Acme.Todoist.Core.Features.Queries;
+namespace Acme.Todoist.Application.Features.Queries;
 
 public static class SearchTodosPaginated
 {

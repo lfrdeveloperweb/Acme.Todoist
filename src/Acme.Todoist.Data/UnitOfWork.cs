@@ -1,8 +1,8 @@
-﻿using Acme.Todoist.Core.Repositories;
-using Acme.Todoist.Data.Repositories;
+﻿using Acme.Todoist.Data.Repositories;
 using Acme.Todoist.Infrastructure.Data;
 using System.Data;
 using System;
+using Acme.Todoist.Application.Repositories;
 
 namespace Acme.Todoist.Data
 {

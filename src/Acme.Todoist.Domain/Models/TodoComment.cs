@@ -2,9 +2,9 @@
 
 namespace Acme.Todoist.Domain.Models
 {
-    public sealed class TodoComment : EntityBase
+    public sealed class TodoComment
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public string TodoId { get; set; }
 

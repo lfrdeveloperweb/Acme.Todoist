@@ -5,13 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Acme.Todoist.Core\Acme.Todoist.Core.csproj" />
+    <ProjectReference Include="..\Acme.Todoist.Domain\Acme.Todoist.Domain.csproj" />
     <ProjectReference Include="..\Acme.Todoist.Infrastructure\Acme.Todoist.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="Destructurama.Attributed" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Commands\Accounts\" />
   </ItemGroup>
 
 </Project>

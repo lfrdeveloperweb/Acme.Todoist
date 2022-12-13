@@ -34,8 +34,11 @@ namespace Acme.Todoist.Application.DataContracts
             string Description,
             DateTime? DueDate,
             int Priority,
+            ICollection<string> Labels,
             DateTimeOffset? CompletedAt,
-            DateTimeOffset CreatedAt);
+            DateTimeOffset CreatedAt,
+            IdentityNamedResponse CreatedBy,
+            DateTimeOffset? UpdatedAt);
 
         public sealed record TodoCommentResponseData(
             string Id,

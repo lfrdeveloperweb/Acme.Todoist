@@ -1,11 +1,11 @@
-﻿using Acme.Todoist.Infrastructure.Models;
-using Acme.Todoist.Infrastructure.Queries;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Acme.Todoist.Core.Repositories;
+using Acme.Todoist.Application.Repositories;
 using Acme.Todoist.Domain.Models;
+using Acme.Todoist.Infrastructure.Models;
+using Acme.Todoist.Infrastructure.Queries;
 
-namespace Acme.Todoist.Core.Features.Queries
+namespace Acme.Todoist.Application.Features.Queries
 {
     public sealed class GetTodoDetails
     {
