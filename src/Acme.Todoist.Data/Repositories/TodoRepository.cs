@@ -1,6 +1,4 @@
-﻿using Acme.Todoist.Commons.Models;
-using Acme.Todoist.Commons.Models.Security;
-using Acme.Todoist.Domain.Models;
+﻿using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
 using Acme.Todoist.Infrastructure.Data;
 using Dapper;
@@ -12,6 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Domain.Commons;
+using Acme.Todoist.Domain.Security;
 
 namespace Acme.Todoist.Data.Repositories
 {

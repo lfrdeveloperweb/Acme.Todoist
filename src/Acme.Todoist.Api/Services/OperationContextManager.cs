@@ -1,8 +1,8 @@
 ﻿using Acme.Todoist.Api.Constants;
-using Acme.Todoist.Commons.Models.Security;
-using Acme.Todoist.Infrastructure.Models;
 using Microsoft.AspNetCore.Http;
 using System;
+using Acme.Todoist.Domain.Commons;
+using Acme.Todoist.Domain.Security;
 
 namespace Acme.Todoist.Api.Services
 {

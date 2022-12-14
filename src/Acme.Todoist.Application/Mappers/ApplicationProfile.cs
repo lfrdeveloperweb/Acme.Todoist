@@ -1,7 +1,7 @@
 ﻿using Acme.Todoist.Application.DataContracts.Responses;
 using Acme.Todoist.Application.Features.Commands.Todos;
-using Acme.Todoist.Commons.Models.Security;
 using Acme.Todoist.Domain.Models;
+using Acme.Todoist.Domain.Security;
 using AutoMapper;
 
 namespace Acme.Todoist.Application.Mappers

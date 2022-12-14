@@ -1,11 +1,11 @@
 ﻿using Acme.Todoist.Application.Repositories;
-using Acme.Todoist.Commons.Models.Security;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Infrastructure.Data;
 using Dapper;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Domain.Security;
 
 namespace Acme.Todoist.Data.Repositories;
 

@@ -1,12 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Application.Core.Commands;
+using Acme.Todoist.Application.Core.Commons;
+using Acme.Todoist.Application.Extensions;
 using Acme.Todoist.Application.Repositories;
-using Acme.Todoist.Commons.Models.Security;
+using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Infrastructure.Commands;
-using Acme.Todoist.Infrastructure.Extensions;
-using Acme.Todoist.Infrastructure.Models;
-using Acme.Todoist.Infrastructure.Utils;
+using Acme.Todoist.Domain.Security;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -20,7 +20,7 @@ public static class CreateProject
         string Color,
         OperationContext Context) : Command<CommandResult<Project>>(Context);
 
-    public sealed class CommandHandler : CommandHandler<Command, CommandResult<Project>, IUnitOfWork>
+    public sealed class CommandHandler : CommandHandler<Command, CommandResult<Project>>
     {
         private readonly IKeyGenerator _keyGenerator;
         private readonly IDateTimeProvider _dateTimeProvider;

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Acme.Todoist.Api.Services;
 using Acme.Todoist.Application.DataContracts.Requests;
 using Acme.Todoist.Application.Services;
-using Acme.Todoist.Commons.Models;
+using Acme.Todoist.Domain.Commons;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Acme.Todoist.Api.Controllers;

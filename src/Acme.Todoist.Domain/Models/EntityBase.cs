@@ -1,5 +1,5 @@
 ﻿using System;
-using Acme.Todoist.Commons.Models.Security;
+using Acme.Todoist.Domain.Security;
 
 namespace Acme.Todoist.Domain.Models
 {

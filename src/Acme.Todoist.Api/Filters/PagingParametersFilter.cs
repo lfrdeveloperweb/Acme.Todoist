@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Acme.Todoist.Api.Settings;
-using Acme.Todoist.Commons.Models;
+using Acme.Todoist.Domain.Commons;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Acme.Todoist.Api.Filters

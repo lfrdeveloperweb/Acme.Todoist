@@ -1,9 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using Acme.Todoist.Application.Core.Queries;
 using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Infrastructure.Models;
-using Acme.Todoist.Infrastructure.Queries;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acme.Todoist.Application.Features.Queries
 {

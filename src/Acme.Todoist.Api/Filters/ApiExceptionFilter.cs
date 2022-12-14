@@ -1,5 +1,5 @@
-﻿using Acme.Todoist.Commons.Models;
-using Acme.Todoist.Commons.Resources;
+﻿using Acme.Todoist.Domain.Commons;
+using Acme.Todoist.Domain.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

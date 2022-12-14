@@ -1,15 +1,15 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Acme.Todoist.Application.Repositories;
-using Acme.Todoist.Commons.Models.Security;
+﻿using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Application.Services;
 using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Infrastructure.Commands;
-using Acme.Todoist.Infrastructure.Extensions;
-using Acme.Todoist.Infrastructure.Models;
-using Acme.Todoist.Infrastructure.Utils;
+using Acme.Todoist.Domain.ValueObjects;
 using AutoMapper;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Application.Core.Commands;
+using Acme.Todoist.Application.Core.Commons;
+using Acme.Todoist.Application.Extensions;
+using Acme.Todoist.Domain.Commons;
 
 namespace Acme.Todoist.Application.Features.Commands.Accounts;
 
@@ -18,23 +18,26 @@ public static class LoginUser
     public sealed record Command(
         string Email,
         string Password,
-        OperationContext Context) : Command<CommandResult<User>>(Context);
+        OperationContext Context) : Command<CommandResult<JwtToken>>(Context);
 
-    public sealed class CommandHandler : CommandHandler<Command, CommandResult<User>, IUnitOfWork>
+    public sealed class CommandHandler : CommandHandler<Command, CommandResult<JwtToken>>
     {
+        private readonly IJwtProvider _jwtProvider;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public CommandHandler(
             ILoggerFactory loggerFactory,
             IUnitOfWork unitOfWork,
             ICommandValidator<Command> validator,
+            IJwtProvider jwtProvider,
             IMapper mapper,
             IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator, mapper: mapper)
         {
+            _jwtProvider = jwtProvider;
             _dateTimeProvider = dateTimeProvider;
         }
 
-        protected override async Task<CommandResult<User>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
+        protected override async Task<CommandResult<JwtToken>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
         {
             var user = await UnitOfWork.UserRepository.GetByEmailAsync(command.Email, cancellationToken);
             if (user is null)
@@ -42,12 +45,9 @@ public static class LoginUser
 
             }
 
-            user.CreatedBy = Membership.From(command.OperationContext.Identity);
-            user.CreatedAt = _dateTimeProvider.BrasiliaNow;
+            var jwtToken = _jwtProvider.Generate(user);
 
-            await UnitOfWork.UserRepository.CreateAsync(user, cancellationToken);
-
-            return CommandResult.Created(user);
+            return CommandResult.Ok(jwtToken);
         }
     }
 
@@ -56,38 +56,18 @@ public static class LoginUser
     /// </summary>
     public sealed class CommandValidator : CommandValidator<Command>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IDateTimeProvider _dateTimeProvider;
-
-        public CommandValidator(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider)
+        public CommandValidator()
         {
-            _unitOfWork = unitOfWork;
-            _dateTimeProvider = dateTimeProvider;
-
             SetupValidation();
         }
 
         private void SetupValidation()
         {
-            Transform(it => it.Email, it => it.Trim())
+            RuleFor(command => command.Email)
                 .NotNullOrEmpty();
 
-            RuleFor(request => request)
-                .CustomAsync(CanCreate);
-        }
-
-        /// <summary>
-        /// Validate if can create User.
-        /// </summary>
-        private Task CanCreate(Command command, ValidationContext<Command> validationContext, CancellationToken cancellationToken)
-        {
-            //if (!RequestContext.Membership.Roles.Contains(Common.Models.Security.Role.Manager) && !RequestContext.Membership.IsSuperAdmin)
-            //{
-            //    validationContext.AddFailure("User", ReportCodeType.OnlyManagerIsAllowedToDoThisOperation);
-            //    return;
-            //}
-
-            return Task.CompletedTask;
+            RuleFor(command => command.Password)
+                .NotNullOrEmpty();
         }
     }
 }

@@ -1,11 +1,10 @@
-﻿using Acme.Todoist.Application.DataContracts.Requests;
+﻿using Acme.Todoist.Application.Core.Queries;
+using Acme.Todoist.Application.DataContracts.Requests;
 using Acme.Todoist.Application.DataContracts.Responses;
 using Acme.Todoist.Application.Features.Commands.Projects;
 using Acme.Todoist.Application.Features.Queries;
-using Acme.Todoist.Commons.Models;
+using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Infrastructure.Models;
-using Acme.Todoist.Infrastructure.Queries;
 using AutoMapper;
 using MediatR;
 using System.Threading;

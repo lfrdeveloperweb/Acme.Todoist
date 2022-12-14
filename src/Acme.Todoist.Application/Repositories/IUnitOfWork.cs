@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Data;
 using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Infrastructure.Data;
 
 namespace Acme.Todoist.Application.Repositories
 {
     /// <summary>
     /// Unit of work of repositories.
     /// </summary>
-    public interface IUnitOfWork : IUnitOfWorkBase, IDisposable
+    public interface IUnitOfWork : IDisposable
     {
         /// <summary>
         /// Repository to handle information about <see cref="User"/>
@@ -23,5 +23,21 @@ namespace Acme.Todoist.Application.Repositories
         /// Repository to handle information about <see cref="Todo"/>
         /// </summary>
         ITodoRepository TodoRepository { get; }
+
+        /// <summary>
+        /// Initiates a transaction under the connection held an instance of UnitOfWork.
+        /// </summary>
+        /// <param name="isolationLevel">Transaction isolation level. Default: <see cref="IsolationLevel.ReadCommitted"/>.</param>
+        void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
+
+        /// <summary>
+        /// Commits the transaction.
+        /// </summary>
+        void CommitTransaction();
+
+        /// <summary>
+        /// Rolls back the transaction.
+        /// </summary>
+        void RollbackTransaction();
     }
 }

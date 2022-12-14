@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Acme.Todoist.Commons.Models;
-using Acme.Todoist.Infrastructure.Commands;
-using Acme.Todoist.Infrastructure.Queries;
+using Acme.Todoist.Application.Core.Commands;
+using Acme.Todoist.Application.Core.Queries;
+using Acme.Todoist.Domain.Commons;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;

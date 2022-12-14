@@ -1,14 +1,14 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using Acme.Todoist.Application.Core.Commands;
+using Acme.Todoist.Application.Core.Commons;
 using Acme.Todoist.Application.Repositories;
-using Acme.Todoist.Commons.Models.Security;
+using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Infrastructure.Commands;
-using Acme.Todoist.Infrastructure.Models;
-using Acme.Todoist.Infrastructure.Utils;
+using Acme.Todoist.Domain.Security;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acme.Todoist.Application.Features.Commands.Todos;
 
@@ -19,7 +19,7 @@ public static class CreateTodoComment
         string Description,
         OperationContext Context) : Command<CommandResult<TodoComment>>(Context);
 
-    public sealed class CommandHandler : CommandHandler<Command, CommandResult<TodoComment>, IUnitOfWork>
+    public sealed class CommandHandler : CommandHandler<Command, CommandResult<TodoComment>>
     {
         private readonly IDateTimeProvider _dateTimeProvider;
 

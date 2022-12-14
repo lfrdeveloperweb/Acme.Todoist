@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Application.Core.Commands;
 using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Infrastructure.Commands;
-using Acme.Todoist.Infrastructure.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -13,7 +13,7 @@ public static class CloneTodo
 {
     public record Command(string TodoId, OperationContext Context) : Command<CommandResult<Todo>>(Context);
 
-    public sealed class CommandHandler : CommandHandler<Command, CommandResult<Todo>, IUnitOfWork>
+    public sealed class CommandHandler : CommandHandler<Command, CommandResult<Todo>>
     {
         private readonly ISender _dispatcher;
 

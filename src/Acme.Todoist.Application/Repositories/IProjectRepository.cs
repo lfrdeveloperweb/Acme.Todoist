@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Acme.Todoist.Commons.Models;
+using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
 

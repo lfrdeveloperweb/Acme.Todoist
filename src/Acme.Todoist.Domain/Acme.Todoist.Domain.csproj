@@ -5,8 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Acme.Todoist.Commnos\Acme.Todoist.Commons.csproj" />
-    <ProjectReference Include="..\Acme.Todoist.Infrastructure\Acme.Todoist.Infrastructure.csproj" />
+    <Compile Update="Resources\Resource.Designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Resource.resx">
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

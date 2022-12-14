@@ -1,5 +1,5 @@
-﻿using Acme.Todoist.Application.DataContracts.Responses;
-using Acme.Todoist.Infrastructure.Commands;
+﻿using Acme.Todoist.Application.Core.Commands;
+using Acme.Todoist.Application.DataContracts.Responses;
 using AutoMapper;
 using MediatR;
 

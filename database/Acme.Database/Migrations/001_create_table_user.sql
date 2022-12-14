@@ -3,13 +3,18 @@
 	"user_id"		varchar(32)		CONSTRAINT user_pk PRIMARY KEY,
 	name			varchar(128)	NOT NULL,
 	email			varchar(128)	NOT NULL,
-	birthday		date			NULL,
+	birth_date		date			NULL,
 	phone_number	varchar(20)		NULL,
-	password		varchar(128)	NOT NULL,
-	created_by		varchar(32)		NULL	CONSTRAINT user_user_created_by_fk REFERENCES "user",
+	role_id         SMALLINT        NOT NULL,
+	password_opened	VARCHAR(32)     NOT NULL,
+	password_hash	varchar(128)	NOT NULL,
+	last_login_at	timestamptz    	NULL,
+    login_count		SMALLINT		NOT NULL	DEFAULT 0,
+    is_locked		BOOLEAN			NOT NULL	CONSTRAINT user_is_locked_df DEFAULT false,
+	created_by		varchar(32)		NULL		CONSTRAINT user_user_created_by_fk REFERENCES "user",
 	created_at		timestamptz		NOT NULL,
-	updated_by		varchar(32)		NULL	CONSTRAINT user_user_updated_by_fk REFERENCES "user",
-	updated_at		timestamptz		NULL,
+	updated_by		varchar(32)		NULL		CONSTRAINT user_user_updated_by_fk REFERENCES "user",
+	updated_at		timestamptz		NULL
 );
 
 
