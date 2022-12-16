@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Acme.Todoist.Domain.ValueObjects
+namespace Acme.Todoist.Domain.Commons
 {
     public sealed record PhoneNumber
     {

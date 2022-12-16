@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Acme.Todoist.Domain.Security;
+using System;
 
 namespace Acme.Todoist.Data.Repositories;
 
@@ -15,7 +16,14 @@ public sealed class UserRepository : Repository, IUserRepository
             SELECT u.user_id as id
                  , u.name
                  , u.email
-                 , u.password
+                 , u.birth_date
+	             , u.phone_number
+	             , u.role_id as role
+	             , u.password_hash
+	             , u.last_login_at
+                 , u.login_count
+                 , u.access_failed_count
+                 , u.is_locked
                  , u.created_at
                  , u.updated_at
                  , creator.user_id as id
@@ -23,9 +31,9 @@ public sealed class UserRepository : Repository, IUserRepository
                  , modifier.user_id as id
                  , modifier.name
               FROM ""user"" u
-        INNER JOIN ""user"" creator
+         LEFT JOIN ""user"" creator
                 ON creator.user_id = u.created_by
-        INNER JOIN ""user"" modifier
+         LEFT JOIN ""user"" modifier
                 ON modifier.user_id = u.updated_by";
 
     public UserRepository(IDbConnector dbConnector) : base(dbConnector) { }
@@ -46,7 +54,7 @@ public sealed class UserRepository : Repository, IUserRepository
 
     public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        const string commandText = $"{BaseSelectCommandText} WHERE u.email = @Id";
+        const string commandText = $"{BaseSelectCommandText} WHERE u.email = @Email";
 
         var query = await base.Connection.QueryAsync<User, Membership, Membership, User>(
             sql: commandText,
@@ -73,7 +81,10 @@ public sealed class UserRepository : Repository, IUserRepository
                     user_id,
                     name,
                     email,
-                    password,
+                    birth_date,
+	                phone_number,
+	                role_id,
+	                password_hash,
                     created_at,
                     created_by
                 ) 
@@ -82,7 +93,10 @@ public sealed class UserRepository : Repository, IUserRepository
                     @Id,
                     @Name,
                     @Email,
-                    @Password,
+                    @BirthDate,
+	                @PhoneNumber,
+	                @Role,
+                    @PasswordHash,
                     @CreatedAt,
                     @CreatedBy
                 );";
@@ -90,9 +104,12 @@ public sealed class UserRepository : Repository, IUserRepository
         return ExecuteWithTransactionAsync(commandText, new
         {
             Id = user.Id,
-            Title = user.Name,
+            Name = user.Name,
+            BirthDate = user.BirthDate,
             Email = user.Email,
-            Password = user.Password,
+            PhoneNumber = user.PhoneNumber,
+            PasswordHash = user.PasswordHash,
+            Role = user.Role,
             CreatedAt = user.CreatedAt,
             CreatedBy = user.CreatedBy?.Id
         }, cancellationToken);
@@ -101,22 +118,46 @@ public sealed class UserRepository : Repository, IUserRepository
     public Task UpdateAsync(User user, CancellationToken cancellationToken)
     {
         const string commandText = @"
-                UPDATE ""user""
-                   SET name = @Title
-                     , email = @Description
-                     , password = @ProjectId
-                     , updated_by = @UpdatedBy
-                     , updated_at = @UpdatedAt
-                 WHERE user_id = @Id;";
+            UPDATE ""user""
+               SET name = @Name
+                 , birth_date = @BirthDate
+				 , email = @Email
+                 , phone_number = @PhoneNumber
+                 , is_locked = @IsLocked
+                 , login_count = @LoginCount
+                 , last_login_at = @LastLoginAt
+                 , access_failed_count = @AccessFailedCount
+                 , updated_by = @UpdatedBy
+                 , updated_at = @UpdatedAt
+             WHERE user_id = @Id;";
 
         return ExecuteWithTransactionAsync(commandText, new
         {
             Id = user.Id,
-            Title = user.Name,
+            Name = user.Name,
+            BirthDate = user.BirthDate,
             Email = user.Email,
-            Password = user.Password,
+            PhoneNumber = user.PhoneNumber,
+            LoginCount = user.LoginCount,
+            LastLoginAt = user.LastLoginAt,
+            IsLocked = user.IsLocked,
+            AccessFailedCount = user.AccessFailedCount,
             UpdatedAt = user.UpdatedAt,
             UpdatedBy = user.UpdatedBy?.Id
+        }, cancellationToken);
+    }
+    
+    public Task ChangePasswordAsync(string id, string passwordHash, CancellationToken cancellationToken)
+    {
+        const string commandText = @"
+			UPDATE ""user""
+               SET password_hash = @PasswordHash
+             WHERE user_id = @Id";
+
+        return ExecuteWithTransactionAsync(commandText, new
+        {
+            Id = id,
+            PasswordHash = passwordHash
         }, cancellationToken);
     }
 

@@ -1,6 +1,6 @@
 ﻿using System;
+using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Resources;
-using Acme.Todoist.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 

@@ -5,7 +5,7 @@ using Acme.Todoist.Domain.Models;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Acme.Todoist.Application.Features.Queries
+namespace Acme.Todoist.Application.Features.Todos
 {
     public sealed class GetTodoDetails
     {

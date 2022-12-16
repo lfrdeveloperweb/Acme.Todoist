@@ -15,4 +15,5 @@ public interface IUserRepository
     Task CreateAsync(User user, CancellationToken cancellationToken);
 
     Task UpdateAsync(User user, CancellationToken cancellationToken);
+
 }

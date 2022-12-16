@@ -1,9 +1,14 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Acme.Todoist.Domain.ValueObjects
+namespace Acme.Todoist.Domain.Commons
 {
     public sealed record Email
     {
+        /// <summary>
+        /// The email maximum length.
+        /// </summary>
+        public const int MaxLength = 128;
+
         /// <summary>
         /// Checks if the current string has a valid email address format.
         /// </summary>

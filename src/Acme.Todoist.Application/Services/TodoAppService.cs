@@ -1,14 +1,13 @@
 ﻿using Acme.Todoist.Application.Core.Queries;
-using Acme.Todoist.Application.DataContracts.Requests;
-using Acme.Todoist.Application.DataContracts.Responses;
-using Acme.Todoist.Application.Features.Commands.Todos;
-using Acme.Todoist.Application.Features.Queries;
+using Acme.Todoist.Application.Features.Todos;
 using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
 using AutoMapper;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Application.DataContracts.Requests;
+using Acme.Todoist.Application.DataContracts.Responses;
 
 namespace Acme.Todoist.Application.Services;
 

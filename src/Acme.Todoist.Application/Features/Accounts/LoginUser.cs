@@ -1,17 +1,16 @@
-﻿using Acme.Todoist.Application.Repositories;
-using Acme.Todoist.Application.Services;
-using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Domain.ValueObjects;
-using AutoMapper;
-using Microsoft.Extensions.Logging;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Acme.Todoist.Application.Core.Commands;
 using Acme.Todoist.Application.Core.Commons;
 using Acme.Todoist.Application.Extensions;
+using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Application.Services;
 using Acme.Todoist.Domain.Commons;
+using Acme.Todoist.Domain.Models;
+using Acme.Todoist.Domain.Security;
+using Microsoft.Extensions.Logging;
 
-namespace Acme.Todoist.Application.Features.Commands.Accounts;
+namespace Acme.Todoist.Application.Features.Accounts;
 
 public static class LoginUser
 {
@@ -30,8 +29,7 @@ public static class LoginUser
             IUnitOfWork unitOfWork,
             ICommandValidator<Command> validator,
             IJwtProvider jwtProvider,
-            IMapper mapper,
-            IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator, mapper: mapper)
+            IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator)
         {
             _jwtProvider = jwtProvider;
             _dateTimeProvider = dateTimeProvider;
@@ -42,10 +40,15 @@ public static class LoginUser
             var user = await UnitOfWork.UserRepository.GetByEmailAsync(command.Email, cancellationToken);
             if (user is null)
             {
-
+                return CommandResult.Unauthorized<CommandResult<JwtToken>>();
             }
 
             var jwtToken = _jwtProvider.Generate(user);
+
+            user.ResetAccessFailedCount();
+            user.IncreaseAccessCount(_dateTimeProvider.UtcNow);
+
+            await UnitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
 
             return CommandResult.Ok(jwtToken);
         }

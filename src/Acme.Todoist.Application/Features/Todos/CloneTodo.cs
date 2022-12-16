@@ -7,7 +7,7 @@ using Acme.Todoist.Domain.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Acme.Todoist.Application.Features.Commands.Todos;
+namespace Acme.Todoist.Application.Features.Todos;
 
 public static class CloneTodo
 {

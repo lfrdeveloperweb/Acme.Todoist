@@ -1,4 +1,6 @@
-﻿using Acme.Todoist.Application.Core.Commands;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Application.Core.Commands;
 using Acme.Todoist.Application.Core.Commons;
 using Acme.Todoist.Application.Repositories;
 using Acme.Todoist.Domain.Commons;
@@ -7,10 +9,8 @@ using Acme.Todoist.Domain.Security;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Acme.Todoist.Application.Features.Commands.Todos;
+namespace Acme.Todoist.Application.Features.Todos;
 
 public static class CreateTodoComment
 {

@@ -3,7 +3,7 @@
     /// <summary>
     /// General configuration of the api
     /// </summary>
-    public sealed class PagingSettings
+    public sealed record PagingSettings
     {
         /// <summary>
         /// Default value of records per page

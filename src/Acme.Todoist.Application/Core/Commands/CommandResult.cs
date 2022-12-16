@@ -102,7 +102,7 @@ namespace Acme.Todoist.Application.Core.Commands
         /// Create instance of <see cref="CommandResult"/> with property status code 404 Not found.
         /// </summary>
         /// <returns>Instance of <see cref="CommandResult"/></returns>
-        public static CommandResult NotFound() => new() { StatusCode = StatusCodes.Status404NotFound };
+        public static CommandResult NotFound() => new(StatusCodes.Status404NotFound);
 
         /// <summary>
         /// Create instance of <see cref="CommandResult"/> with property status code 404 Not found.
@@ -146,6 +146,25 @@ namespace Acme.Todoist.Application.Core.Commands
                 Reports = reports
             };
         }
+
+        /// <summary>
+        /// Create instance of <see cref="CommandResult"/> with property status code 401 Not found.
+        /// </summary>
+        /// <returns>Instance of <see cref="CommandResult"/></returns>
+        public static TCommandResult Unauthorized<TCommandResult>() 
+            where TCommandResult : CommandResult, new()
+        {
+            return new TCommandResult
+            {
+                StatusCode = StatusCodes.Status401Unauthorized
+            };
+        }
+
+/// <summary>
+/// Create instance of <see cref="CommandResult"/> with property status code 403 Not found.
+/// </summary>
+/// <returns>Instance of <see cref="CommandResult"/></returns>
+public static CommandResult Forbidden() => new(StatusCodes.Status403Forbidden);
 
         /// <summary>
         /// Create instance of <see cref="CommandResult"/> with property status code 422 Unprocessable entity.

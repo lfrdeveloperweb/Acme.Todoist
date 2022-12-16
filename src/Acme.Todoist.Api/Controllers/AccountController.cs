@@ -18,7 +18,15 @@ public sealed class AccountController : ApiController
         _service = service;
     }
 
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterAccountAsync([FromBody] RegisterAccountRequest request, CancellationToken cancellationToken) =>
+        BuildActionResult(await _service.RegisterAccountAsync(request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
+    
     [HttpPost("login")]
-    public async Task<IActionResult> Get([FromBody] LoginRequest request, CancellationToken cancellationToken) =>
+    public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request, CancellationToken cancellationToken) =>
         BuildActionResult(await _service.LoginAsync(request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
+
+    [HttpPost("{id}/lock")]
+    public async Task<IActionResult> LockAsync(string id, CancellationToken cancellationToken) =>
+        BuildActionResult(await _service.LockAccountAsync(id, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 }

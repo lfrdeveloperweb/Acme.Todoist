@@ -1,11 +1,11 @@
-﻿using Acme.Todoist.Application.Core.Commands;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Application.Core.Commands;
 using Acme.Todoist.Application.Repositories;
 using Acme.Todoist.Domain.Commons;
 using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Acme.Todoist.Application.Features.Commands.Todos
+namespace Acme.Todoist.Application.Features.Todos
 {
     public static class DeleteTodoComment
     {

@@ -11,7 +11,7 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace Acme.Todoist.Application.Features.Commands.Projects;
+namespace Acme.Todoist.Application.Features.Projects;
 
 public static class CreateProject
 {

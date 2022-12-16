@@ -7,6 +7,12 @@ namespace Acme.Todoist.IoC.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<AccountAppService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ProjectAppService>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<TodoAppService>()
                 .InstancePerLifetimeScope();
 

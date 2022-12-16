@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 
-namespace Acme.Todoist.Domain
+namespace Acme.Todoist.Domain.Security
 {
     /// <summary>
     /// Represent scope that a user can access.
     /// </summary>
-    public enum Permission : byte
+    public enum PermissionType : byte
     {
         [Description("user.read")]
         UserRead = 1,

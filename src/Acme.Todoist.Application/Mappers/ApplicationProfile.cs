@@ -1,8 +1,9 @@
 ﻿using Acme.Todoist.Application.DataContracts.Responses;
-using Acme.Todoist.Application.Features.Commands.Todos;
+using Acme.Todoist.Application.Features.Todos;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
 using AutoMapper;
+using Newtonsoft.Json.Linq;
 
 namespace Acme.Todoist.Application.Mappers
 {
@@ -11,6 +12,7 @@ namespace Acme.Todoist.Application.Mappers
         public ApplicationProfile()
         {
             CommonMappers();
+            AccountMappers();
             TodoMappers();
         }
         
@@ -18,6 +20,11 @@ namespace Acme.Todoist.Application.Mappers
         {
             CreateMap<IIdentityContext, Membership>();
             CreateMap<Membership, IdentityNamedResponse>();
+        }
+
+        private void AccountMappers()
+        {
+            CreateMap<JwtToken, JwtTokenResponseData>();
         }
 
         private void TodoMappers()

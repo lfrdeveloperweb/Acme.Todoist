@@ -1,4 +1,9 @@
-﻿using Acme.Todoist.Application.Core.Commands;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading;
+using System.Threading.Tasks;
+using Acme.Todoist.Application.Core.Commands;
 using Acme.Todoist.Application.Core.Commons;
 using Acme.Todoist.Application.Extensions;
 using Acme.Todoist.Application.Repositories;
@@ -7,13 +12,8 @@ using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Acme.Todoist.Application.Features.Commands.Todos
+namespace Acme.Todoist.Application.Features.Todos
 {
     public static class UpdateTodo
     {

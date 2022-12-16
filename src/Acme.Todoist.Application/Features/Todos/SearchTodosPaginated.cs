@@ -6,7 +6,7 @@ using Acme.Todoist.Domain.Models.Filters;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Acme.Todoist.Application.Features.Queries;
+namespace Acme.Todoist.Application.Features.Todos;
 
 public static class SearchTodosPaginated
 {

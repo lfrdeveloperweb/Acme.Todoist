@@ -6,12 +6,12 @@ using Acme.Todoist.Domain.Models.Filters;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Acme.Todoist.Application.Features.Queries
+namespace Acme.Todoist.Application.Features.Projects
 {
     public static class SearchProjectsPaginated
     {
         public record Query(
-                PagingParameters PagingParameters, 
+                PagingParameters PagingParameters,
                 OperationContext OperationContext) : PaginatedQuery<PaginatedQueryResult<Project>, Project>(PagingParameters, OperationContext);
 
         public sealed class QueryHandler : IQueryHandler<Query, PaginatedQueryResult<Project>>
