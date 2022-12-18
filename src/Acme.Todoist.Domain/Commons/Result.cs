@@ -36,7 +36,7 @@ namespace Acme.Todoist.Domain.Commons
         /// <summary>
         /// Create instance of <see cref="Result"/> with property Succeeded "true".
         /// </summary>
-        public static Result<T> Success<T>(T data) => new Result<T>(true, data);
+        public static Result<T> Success<T>(T data) => new(true, data);
 
         /// <summary>
         /// Create instance of <see cref="Result"/> with property Succeeded "false".
@@ -60,18 +60,18 @@ namespace Acme.Todoist.Domain.Commons
         /// Create instance of <see cref="Result"/> with property Succeeded "false".
         /// </summary>
         public static Result<T> Failure<T>(ReportCodeType reportCodeType) =>
-            new Result<T>(false, default(T), new List<Report> { Report.Create(reportCodeType) });
+            new(false, default, new List<Report> { Report.Create(reportCodeType) });
 
         /// <summary>
         /// Create instance of <see cref="Result"/> with property Succeeded "false".
         /// </summary>
         public static Result<T> Failure<T>(Report report) =>
-            new Result<T>(false, default(T), new List<Report> { report });
+            new(false, default, new List<Report> { report });
         /// <summary>
         /// Create instance of <see cref="Result"/> with property Succeeded "false".
         /// </summary>
         public static Result<T> Failure<T>(ICollection<Report> reports) =>
-            new Result<T>(false, default(T), reports);
+            new(false, default, reports);
     }
 
     /// <summary>

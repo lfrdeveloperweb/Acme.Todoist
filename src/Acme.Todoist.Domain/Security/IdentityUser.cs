@@ -11,11 +11,6 @@ namespace Acme.Todoist.Domain.Security
         Role Role,
         IReadOnlyDictionary<string, IReadOnlyCollection<string>> Claims = null) : IIdentityContext
     {
-        /// <summary>
-        /// Gets or sets the user name for this user.
-        /// </summary>
-        public string UserName { get; set; }
-
         /// <inheritdoc />
         public bool IsAdmin => Role == Role.Admin;
 

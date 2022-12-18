@@ -4,20 +4,14 @@ using Microsoft.Extensions.Options;
 
 namespace Acme.Todoist.Api.Settings
 {
-    public sealed class JwtSettingsSetup : IConfigureOptions<JwtSettings>
+    internal sealed class JwtSettingsSetup : IConfigureOptions<JwtSettings>
     {
-        private const string SectionName = "Jwt";
+        private const string SectionName = "security:jwtSettings";
 
         private readonly IConfiguration _configuration;
 
-        public JwtSettingsSetup(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        public JwtSettingsSetup(IConfiguration configuration) => _configuration = configuration;
 
-        public void Configure(JwtSettings options)
-        {
-            _configuration.GetSection(SectionName).Bind(options);
-        }
+        public void Configure(JwtSettings options) => _configuration.GetSection(SectionName).Bind(options);
     }
 }

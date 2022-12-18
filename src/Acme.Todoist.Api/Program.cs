@@ -90,6 +90,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddOptions();
 
+builder.Services.ConfigureOptions<AccountSettingsSetup>();
 builder.Services.ConfigureOptions<JwtSettingsSetup>();
 builder.Services.ConfigureOptions<JwtBearerSettingsSetup>();
 

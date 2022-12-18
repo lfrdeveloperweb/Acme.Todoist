@@ -6,6 +6,6 @@ namespace Acme.Todoist.Application.Core.Security
 {
     public interface ISecurityService
     {
-        Task<Result> CheckPasswordAsync(User user, string password);
+        Task<SignInResult> CheckPasswordAsync(User user, string password);
     }
 }

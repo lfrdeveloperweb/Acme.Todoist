@@ -77,15 +77,11 @@ public static class RegisterAccount
                 .When(command => command.BirthDate >= DateTime.MinValue);
 
             RuleFor(command => command.Email)
-                .NotNullOrEmpty()
-                .MaxLength(Email.MaxLength)
                 .IsValidEmail()
                 .MustAsync(async (email, cancellationToken) => !await unitOfWork.UserRepository.ExistByEmailAsync(email, cancellationToken))
                 .WithMessageFromErrorCode(ReportCodeType.DuplicatedEmail); ;
 
             RuleFor(command => command.PhoneNumber)
-                .NotNullOrEmpty()
-                .MaxLength(PhoneNumber.MaxLength)
                 .IsValidPhoneNumber()
                 .MustAsync(async (phoneNumber, cancellationToken) => !await unitOfWork.UserRepository.ExistByPhoneNumberAsync(phoneNumber, cancellationToken))
                 .WithMessageFromErrorCode(ReportCodeType.DuplicatedPhoneNumber);

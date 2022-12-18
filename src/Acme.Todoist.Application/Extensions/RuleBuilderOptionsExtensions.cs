@@ -71,6 +71,8 @@ namespace Acme.Todoist.Application.Extensions
         public static IRuleBuilderOptions<T, string> IsValidEmail<T>(this IRuleBuilder<T, string> rule)
         {
             return rule
+                .NotNullOrEmpty()
+                .MaxLength(Email.MaxLength)
                 .Must(Email.IsValidEmailAddress)
                 .WithMessageFromErrorCode(ReportCodeType.InvalidEmail);
         }
@@ -81,6 +83,9 @@ namespace Acme.Todoist.Application.Extensions
         public static IRuleBuilderOptions<T, string> IsValidPhoneNumber<T>(this IRuleBuilder<T, string> rule)
         {
             return rule
+                .NotNullOrEmpty()
+                .MaxLength(PhoneNumber.MaxLength)
+                .IsValidPhoneNumber()
                 .Must(PhoneNumber.IsValidPhoneNumber)
                 .WithMessageFromErrorCode(ReportCodeType.InvalidPhoneNumber);
         }

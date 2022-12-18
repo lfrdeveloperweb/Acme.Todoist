@@ -4,7 +4,6 @@ using Acme.Todoist.Application.Features.Todos;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
 using AutoMapper;
-using Newtonsoft.Json.Linq;
 
 namespace Acme.Todoist.Application.Mappers
 {

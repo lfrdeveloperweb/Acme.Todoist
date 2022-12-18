@@ -19,7 +19,7 @@ public sealed class AccountAppService : AppServiceBase
         var command = new RegisterAccount.Command(
             request.Name,
             request.BirthDate,
-            request.Email,
+            request.Email?.ToLower(),
             request.PhoneNumber,
             request.Password,
             request.ConfirmPassword,
