@@ -5,10 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Acme.Todoist.Application.DataContracts.Requests;
 using Acme.Todoist.Domain.Commons;
+using Acme.Todoist.Domain.Security;
+using Acme.Todoist.Infrastructure.Security;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Acme.Todoist.Api.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("todos")]
     public sealed class TodoController : ApiController
     {
@@ -23,7 +26,7 @@ namespace Acme.Todoist.Api.Controllers
         /// <summary>
         /// Get task by id.
         /// </summary>
-        //[Permission(PermissionType.OrderRead)]
+        [HasPermission(PermissionType.TodoRead)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id, CancellationToken cancellationToken) =>
             BuildActionResult(await _service.GetAsync(id, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));

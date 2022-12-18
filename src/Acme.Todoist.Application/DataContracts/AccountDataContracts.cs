@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Acme.Todoist.Domain.Security;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Acme.Todoist.Domain.Models;
 
 namespace Acme.Todoist.Application.DataContracts
 {
@@ -8,7 +8,7 @@ namespace Acme.Todoist.Application.DataContracts
     {
         public sealed record RegisterAccountRequest(
             [Required] string Name,
-            DateOnly? BirthDate,
+            DateTime? BirthDate,
             [Required] string Email,
             [Required] string PhoneNumber,
             [Required] string Password,

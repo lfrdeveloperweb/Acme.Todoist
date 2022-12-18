@@ -12,8 +12,11 @@ public interface IUserRepository
 
     Task<bool> ExistsAsync(string id, CancellationToken cancellationToken);
 
+    Task<bool> ExistByEmailAsync(string email, CancellationToken cancellationToken);
+
+    Task<bool> ExistByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken);
+
     Task CreateAsync(User user, CancellationToken cancellationToken);
 
     Task UpdateAsync(User user, CancellationToken cancellationToken);
-
 }

@@ -5,6 +5,11 @@ namespace Acme.Todoist.Domain.Commons
     public sealed record PhoneNumber
     {
         /// <summary>
+        /// The phone number maximum length.
+        /// </summary>
+        public const int MaxLength = 16;
+
+        /// <summary>
         /// Checks if the current string has a valid brazilian phone number format.
         /// </summary>
         /// <param name="source">String to be checked.</param>

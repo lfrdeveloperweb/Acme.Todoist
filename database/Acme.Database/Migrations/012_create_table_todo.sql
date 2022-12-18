@@ -14,4 +14,3 @@
 	updated_at		timestamptz		NULL,
 	deleted_at		timestamptz		NULL	
 );
-

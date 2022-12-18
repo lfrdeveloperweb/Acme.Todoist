@@ -1,12 +1,11 @@
 ﻿using Acme.Todoist.Application.Repositories;
 using Acme.Todoist.Domain.Models;
+using Acme.Todoist.Domain.Security;
 using Acme.Todoist.Infrastructure.Data;
 using Dapper;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Acme.Todoist.Domain.Security;
-using System;
 
 namespace Acme.Todoist.Data.Repositories;
 
@@ -70,7 +69,23 @@ public sealed class UserRepository : Repository, IUserRepository
         const string commandText =
             @"SELECT 1 FROM ""user"" WHERE user_id = @Id;";
 
-        return ExistsWithTransactionAsync(commandText, new { Id = id }, cancellationToken);
+        return ExistsWithTransactionAsync(commandText, new { id }, cancellationToken);
+    }
+
+    public Task<bool> ExistByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        const string commandText =
+            @"SELECT 1 FROM ""user"" WHERE email = @Email;";
+
+        return ExistsWithTransactionAsync(commandText, new { email }, cancellationToken);
+    }
+
+    public Task<bool> ExistByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
+    {
+        const string commandText =
+            @"SELECT 1 FROM ""user"" WHERE phone_number = @PhoneNumber;";
+
+        return ExistsWithTransactionAsync(commandText, new { phoneNumber }, cancellationToken);
     }
 
     public Task CreateAsync(User user, CancellationToken cancellationToken)

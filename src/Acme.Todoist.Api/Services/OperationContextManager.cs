@@ -1,32 +1,22 @@
 ﻿using Acme.Todoist.Api.Constants;
-using Microsoft.AspNetCore.Http;
-using System;
+using Acme.Todoist.Application.Factories;
 using Acme.Todoist.Domain.Commons;
-using Acme.Todoist.Domain.Security;
+using Microsoft.AspNetCore.Http;
 
 namespace Acme.Todoist.Api.Services
 {
-    public interface IOperationContextManager
-    {
-        /// <summary>
-        /// Retrieve context of a request.
-        /// </summary>
-        OperationContext GetContext();
-    }
-
     /// <summary>
     /// Request manager.
     /// </summary>
     public sealed class OperationContextManager : IOperationContextManager
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        // private readonly IIdentityContextFactory _identityContextFactory;
+        private readonly IIdentityContextFactory _identityContextFactory;
 
-        //public OperationContextManager(IHttpContextAccessor httpContextAccessor, IIdentityContextFactory identityContextFactory)
-        public OperationContextManager(IHttpContextAccessor httpContextAccessor)
+        public OperationContextManager(IHttpContextAccessor httpContextAccessor, IIdentityContextFactory identityContextFactory)
         {
             _httpContextAccessor = httpContextAccessor;
-            // _identityContextFactory = identityContextFactory;
+            _identityContextFactory = identityContextFactory;
         }
 
         /// <summary>
@@ -39,8 +29,8 @@ namespace Acme.Todoist.Api.Services
 
             return new OperationContext(
                 CorrelationId: context.Request.Headers[ApplicationHeaderNames.RequestId],
-                //Identity: _identityContextFactory.Create(context.User),
-                Identity: new IdentityUser("anonymous", nameof(Role.Anonymous), Role.Anonymous),
+                Identity: _identityContextFactory.Create(context.User),
+                //Identity: new IdentityUser("anonymous", nameof(Role.Anonymous), Role.Anonymous),
                 IsAuthenticated: context.User.Identity.IsAuthenticated,
                 InternalSourceIp: connection.LocalIpAddress?.ToString(),
                 ExternalSourceIp: connection.RemoteIpAddress?.ToString());

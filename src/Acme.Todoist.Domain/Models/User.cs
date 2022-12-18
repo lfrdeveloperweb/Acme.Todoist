@@ -1,5 +1,5 @@
-﻿using System;
-using Acme.Todoist.Domain.Commons;
+﻿using Acme.Todoist.Domain.Security;
+using System;
 
 namespace Acme.Todoist.Domain.Models
 {
@@ -9,7 +9,7 @@ namespace Acme.Todoist.Domain.Models
 
         public string Name { get; set; }
 
-        public string Email { get; }
+        public string Email { get; set; }
 
         public bool EmailConfirmed { get; set; }
 

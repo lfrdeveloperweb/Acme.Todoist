@@ -7,6 +7,5 @@ public enum Role : byte
 {
     Anonymous = 0,
     Admin = 1,
-    Customer = 10,
-    ClientApplication = 99
+    User = 2
 }

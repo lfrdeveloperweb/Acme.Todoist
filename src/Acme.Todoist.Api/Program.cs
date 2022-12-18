@@ -16,8 +16,15 @@ using Serilog;
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using Acme.Todoist.Api.Settings;
+using Acme.Todoist.Infrastructure.Security;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +47,10 @@ builder.Host.ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
     InjectorBootstrapper.Inject(containerBuilder, builder.Configuration, builder.Services, Assembly.GetExecutingAssembly()));
 
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+
+// TODO: Move to infrastructure.
+//builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+//builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
 builder.Services.AddControllers(options =>
 {
@@ -76,6 +87,8 @@ builder.Services.AddControllers(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddOptions();
 
 builder.Services.ConfigureOptions<JwtSettingsSetup>();
 builder.Services.ConfigureOptions<JwtBearerSettingsSetup>();

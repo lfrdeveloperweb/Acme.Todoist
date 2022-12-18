@@ -29,11 +29,11 @@ namespace Acme.Todoist.Infrastructure.Security
         {
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
-            var claims = new List<Claim>
+            var claims = new Dictionary<string, object>
             {
-                new(JwtRegisteredClaimNames.Sub, user.Id),
-                new(JwtRegisteredClaimNames.Email, user.Email),
-                new(JwtRegisteredClaimNames.Name, user.Name)
+                [JwtRegisteredClaimNames.Sub] = user.Id,
+                [JwtRegisteredClaimNames.Email] = user.Email,
+                [JwtRegisteredClaimNames.Name] = user.Name
             };
 
             var tokenExpiration = TimeSpan.FromMinutes(_settings.TokenExpirationInMinutes);
@@ -41,14 +41,13 @@ namespace Acme.Todoist.Infrastructure.Security
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(claims),
+                // Subject = new ClaimsIdentity(claims),
                 Expires = tokenExpirationTime,
                 SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecurityKey)),
-                    SecurityAlgorithms.HmacSha256),
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecurityKey)), SecurityAlgorithms.HmacSha256),
                 Audience = _settings.Audience,
                 Issuer = _settings.Issuer,
-
+                Claims = claims
             };
 
             var token = jwtSecurityTokenHandler.CreateToken(tokenDescriptor);

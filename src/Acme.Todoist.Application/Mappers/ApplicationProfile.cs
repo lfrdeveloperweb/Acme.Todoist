@@ -1,4 +1,5 @@
 ﻿using Acme.Todoist.Application.DataContracts.Responses;
+using Acme.Todoist.Application.Features.Accounts;
 using Acme.Todoist.Application.Features.Todos;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
@@ -25,6 +26,10 @@ namespace Acme.Todoist.Application.Mappers
         private void AccountMappers()
         {
             CreateMap<JwtToken, JwtTokenResponseData>();
+
+            CreateMap<RegisterAccount.Command, User>();
+
+            CreateMap<User, UserResponseData>();
         }
 
         private void TodoMappers()
