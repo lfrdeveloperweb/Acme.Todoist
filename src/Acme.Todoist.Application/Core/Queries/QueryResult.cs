@@ -33,7 +33,7 @@ namespace Acme.Todoist.Application.Core.Queries
         /// Otherwise, create instance of <see cref="QueryResult{TData}"/> with property status code 404 NotFound.
         /// </summary>
         /// <returns>Instance of <see cref="QueryResult{TData}"/></returns>
-        public static QueryResult<TData> OkOrNotFound<TData>(TData data) => data != null ? Ok(data) : NotFound<TData>();
+        public static QueryResult<TData> OkOrNotFound<TData>(TData data) => data is not null ? Ok(data) : NotFound<TData>();
 
         /// <summary>
         /// Create instance of <see cref="IQueryResult"/> with property status code 500 internal server error.

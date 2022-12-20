@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Acme.Todoist.Api.Services;
 using Acme.Todoist.Application.DataContracts.Requests;
 using Acme.Todoist.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Acme.Todoist.Api.Controllers;
@@ -25,6 +26,11 @@ public sealed class AccountController : ApiController
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request, CancellationToken cancellationToken) =>
         BuildActionResult(await _service.LoginAsync(request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
+
+    [Authorize]
+    [HttpGet("profile")]
+    public async Task<IActionResult> ProfileAsync(CancellationToken cancellationToken) =>
+        BuildActionResult(await _service.GetProfileAsync(OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
     [HttpPost("{id}/lock")]
     public async Task<IActionResult> LockAsync(string id, CancellationToken cancellationToken) =>

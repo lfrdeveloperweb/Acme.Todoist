@@ -22,7 +22,7 @@ namespace Acme.Todoist.Application.DataContracts
     namespace Responses
     {
         public sealed record JwtTokenResponseData(
-            string Token,
+            string AccessToken,
             string TokenType,
             int ExpiresIn);
 
@@ -31,7 +31,9 @@ namespace Acme.Todoist.Application.DataContracts
             string Name,
             DateOnly? BirthDate,
             string Email,
+            bool EmailConfirmed,
             string PhoneNumber,
+            bool PhoneNumberConfirmed,
             Role Role,
             bool IsLocked,
             int LoginCount,

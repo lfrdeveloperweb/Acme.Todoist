@@ -7,6 +7,7 @@ using AutoMapper;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Domain.Models;
 
 namespace Acme.Todoist.Application.Services;
 
@@ -40,6 +41,14 @@ public sealed class AccountAppService : AppServiceBase
         var result = await Dispatcher.Send(command, cancellationToken);
 
         return Response.From<JwtToken, JwtTokenResponseData>(result, Mapper);
+    }
+    
+    public async ValueTask<Response<UserResponseData>> GetProfileAsync(OperationContext operationContext, CancellationToken cancellationToken)
+    {
+        var query = new GetUserDetails.Query(operationContext.Identity.Id, operationContext);
+        var result = await Dispatcher.Send(query, cancellationToken);
+
+        return Response.From<User, UserResponseData>(result, Mapper);
     }
 
     public async ValueTask<Response> LockAccountAsync(string userId, OperationContext operationContext, CancellationToken cancellationToken)

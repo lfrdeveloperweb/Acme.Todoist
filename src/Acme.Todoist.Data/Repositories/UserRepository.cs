@@ -14,9 +14,11 @@ public sealed class UserRepository : Repository, IUserRepository
     private const string BaseSelectCommandText = @"
             SELECT u.user_id as id
                  , u.name
-                 , u.email
                  , u.birth_date
+                 , u.email
+                 , u.email_confirmed
 	             , u.phone_number
+                 , u.phone_number_confirmed
 	             , u.role_id as role
 	             , u.password_hash
 	             , u.last_login_at

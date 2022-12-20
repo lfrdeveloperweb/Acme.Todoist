@@ -1,11 +1,10 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Acme.Todoist.Infrastructure.Security;
+﻿using Acme.Todoist.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace Acme.Todoist.Api.Settings
 {
@@ -46,15 +45,15 @@ namespace Acme.Todoist.Api.Settings
                 OnTokenValidated = async context =>
                 {
                     var accessToken = context.SecurityToken as JwtSecurityToken;
-                    if (Guid.TryParse(accessToken.Id, out Guid sessionId))
-                    {
-                        //if (await _session.ValidateSessionAsync(sessionId))
-                        //{
-                        //    return;
-                        //}
-                    }
+                    //if (Guid.TryParse(accessToken.Id, out Guid sessionId))
+                    //{
+                    //    //if (await _session.ValidateSessionAsync(sessionId))
+                    //    //{
+                    //    //    return;
+                    //    //}
+                    //}
 
-                    throw new SecurityTokenValidationException("Session not valid for provided token.");
+                    // throw new SecurityTokenValidationException("Session not valid for provided token.");
                 }
             };
         }

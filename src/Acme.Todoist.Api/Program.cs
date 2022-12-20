@@ -1,4 +1,5 @@
 using Acme.Todoist.Api.Filters;
+using Acme.Todoist.Api.Settings;
 using Acme.Todoist.Api.TypeConverters;
 using Acme.Todoist.IoC;
 using Autofac;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Serilog;
@@ -18,13 +20,9 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using Acme.Todoist.Api.Settings;
-using Acme.Todoist.Infrastructure.Security;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.Extensions.Options;
+
+IdentityModelEventSource.ShowPII = true;
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,11 +85,9 @@ builder.Services.AddControllers(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddOptions();
 
-builder.Services.ConfigureOptions<AccountSettingsSetup>();
-builder.Services.ConfigureOptions<JwtSettingsSetup>();
+builder.Services.ConfigureOptions<SettingsSetup>();
 builder.Services.ConfigureOptions<JwtBearerSettingsSetup>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
