@@ -1,6 +1,7 @@
 ﻿CREATE TABLE "user"
 (
 	"user_id"				varchar(32)		CONSTRAINT user_pk PRIMARY KEY,
+	social_security_number	varchar(11)		NOT NULL,
 	name					varchar(128)	NOT NULL,
 	birth_date				date			NULL,
 	email					varchar(128)	NOT NULL,

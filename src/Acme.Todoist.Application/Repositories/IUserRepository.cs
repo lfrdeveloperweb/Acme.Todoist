@@ -8,6 +8,8 @@ public interface IUserRepository
 {
     Task<User> GetByIdAsync(string id, CancellationToken cancellationToken);
 
+    Task<User> GetBySocialSecurityNumberAsync(string socialSecurityNumber, CancellationToken cancellationToken);
+
     Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken);
 
     Task<bool> ExistsAsync(string id, CancellationToken cancellationToken);
@@ -19,4 +21,6 @@ public interface IUserRepository
     Task CreateAsync(User user, CancellationToken cancellationToken);
 
     Task UpdateAsync(User user, CancellationToken cancellationToken);
+
+    Task ChangePasswordAsync(User user, CancellationToken cancellationToken);
 }

@@ -23,7 +23,9 @@ namespace Acme.Todoist.Domain.Models
 
         public string PasswordHash { get; private set; }
 
-        public bool IsLocked { get; private set; }
+        public DateTimeOffset? LockedAt { get; private set; }
+
+        public bool IsLocked => LockedAt.HasValue;
 
         public int AccessFailedCount { get; private set; }
 
@@ -31,7 +33,7 @@ namespace Acme.Todoist.Domain.Models
 
         public DateTimeOffset? LastLoginAt { get; private set; }
 
-        public void SetPassword(string passwordHashed) => PasswordHash = passwordHashed;
+        public void ChangePassword(string passwordHashed) => PasswordHash = passwordHashed;
 
         public void IncreaseAccessCount(DateTimeOffset loginAt)
         {
@@ -43,16 +45,16 @@ namespace Acme.Todoist.Domain.Models
 
         public void IncreaseAccessFailedCount() => AccessFailedCount++;
 
-        public void Lock()
+        public void Lock(DateTimeOffset lockedAt)
         {
             ResetAccessFailedCount();
-            IsLocked = true;
+            LockedAt = lockedAt;
         }
 
         public void Unlock()
         {
             ResetAccessFailedCount();
-            IsLocked = false;
+            LockedAt = null;
         }
     }
 }

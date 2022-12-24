@@ -11,6 +11,7 @@ using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
 using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Acme.Todoist.Application.Features.Todos
@@ -30,7 +31,7 @@ namespace Acme.Todoist.Application.Features.Todos
         public sealed class CommandHandler : CommandHandler<Command, CommandResult<Todo>>
         {
             private readonly IKeyGenerator _keyGenerator;
-            private readonly IDateTimeProvider _dateTimeProvider;
+            private readonly ISystemClock _systemClock;
 
             public CommandHandler(
                 ILoggerFactory loggerFactory,
@@ -38,10 +39,10 @@ namespace Acme.Todoist.Application.Features.Todos
                 ICommandValidator<Command> validator,
                 IMapper mapper,
                 IKeyGenerator keyGenerator,
-                IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator, mapper: mapper)
+                ISystemClock systemClock) : base(loggerFactory, unitOfWork, validator, mapper: mapper)
             {
                 _keyGenerator = keyGenerator;
-                _dateTimeProvider = dateTimeProvider;
+                _systemClock = systemClock;
             }
 
             protected override async Task<CommandResult<Todo>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
@@ -50,7 +51,7 @@ namespace Acme.Todoist.Application.Features.Todos
 
                 todo.Id = _keyGenerator.Generate();
                 todo.CreatedBy = Membership.From(command.OperationContext.Identity);
-                todo.CreatedAt = _dateTimeProvider.UtcNow;
+                todo.CreatedAt = _systemClock.UtcNow;
 
                 await UnitOfWork.TodoRepository.CreateAsync(todo, cancellationToken);
 
@@ -64,9 +65,9 @@ namespace Acme.Todoist.Application.Features.Todos
         public sealed class CommandValidator : CommandValidator<Command>
         {
             private readonly IUnitOfWork _unitOfWork;
-            private readonly IDateTimeProvider _dateTimeProvider;
+            private readonly ISystemClock _dateTimeProvider;
 
-            public CommandValidator(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider)
+            public CommandValidator(IUnitOfWork unitOfWork, ISystemClock dateTimeProvider)
             {
                 _unitOfWork = unitOfWork;
                 _dateTimeProvider = dateTimeProvider;

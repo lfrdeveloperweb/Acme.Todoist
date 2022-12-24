@@ -108,7 +108,7 @@ namespace Acme.Todoist.Application.Core.Commands
         protected CommandHandler(
             ILoggerFactory loggerFactory,
             IUnitOfWork unitOfWork,
-            CommandValidator<TCommand> validator = null,
+            ICommandValidator<TCommand> validator = null,
             IMapper mapper = null) : base(loggerFactory, unitOfWork, validator, mapper) { }
     }
 }

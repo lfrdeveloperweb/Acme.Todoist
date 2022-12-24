@@ -30,7 +30,6 @@ namespace Acme.Todoist.Api.Services
             return new OperationContext(
                 CorrelationId: context.Request.Headers[ApplicationHeaderNames.RequestId],
                 Identity: _identityContextFactory.Create(context.User),
-                //Identity: new IdentityUser("anonymous", nameof(Role.Anonymous), Role.Anonymous),
                 IsAuthenticated: context.User.Identity.IsAuthenticated,
                 InternalSourceIp: connection.LocalIpAddress?.ToString(),
                 ExternalSourceIp: connection.RemoteIpAddress?.ToString());

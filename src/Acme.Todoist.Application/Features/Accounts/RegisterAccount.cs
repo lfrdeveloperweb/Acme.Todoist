@@ -13,6 +13,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Internal;
 
 namespace Acme.Todoist.Application.Features.Accounts;
 
@@ -27,11 +28,11 @@ public static class RegisterAccount
         string ConfirmPassword,
         OperationContext Context) : Command<CommandResult<User>>(Context);
 
-    public sealed class CommandHandler : CommandHandler<Command, CommandResult<User>>
+    internal sealed class CommandHandler : CommandHandler<Command, CommandResult<User>>
     {
         private readonly IPasswordHasher _passwordHasher;
         private readonly IKeyGenerator _keyGenerator;
-        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ISystemClock _systemClock;
 
         public CommandHandler(
             ILoggerFactory loggerFactory,
@@ -40,11 +41,11 @@ public static class RegisterAccount
             IMapper mapper,
             IPasswordHasher passwordHasher,
             IKeyGenerator keyGenerator,
-            IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator, mapper)
+            ISystemClock systemClock) : base(loggerFactory, unitOfWork, validator, mapper)
         {
             _passwordHasher = passwordHasher;
             _keyGenerator = keyGenerator;
-            _dateTimeProvider = dateTimeProvider;
+            _systemClock = systemClock;
         }
 
         protected override async Task<CommandResult<User>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
@@ -53,8 +54,8 @@ public static class RegisterAccount
             
             user.Id = _keyGenerator.Generate();
             user.Role = Role.User;
-            user.SetPassword(_passwordHasher.HashPassword(command.Password));
-            user.CreatedAt = _dateTimeProvider.UtcNow;
+            user.ChangePassword(_passwordHasher.HashPassword(command.Password));
+            user.CreatedAt = _systemClock.UtcNow;
 
             await UnitOfWork.UserRepository.CreateAsync(user, cancellationToken);
 
@@ -62,24 +63,21 @@ public static class RegisterAccount
         }
     }
 
-    /// <summary>
-    /// Validator to validate request information about <see cref="User"/>.
-    /// </summary>
-    public sealed class CommandValidator : CommandValidator<Command>
+    internal sealed class CommandValidator : CommandValidator<Command>
     {
-        public CommandValidator(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider)
+        public CommandValidator(IUnitOfWork unitOfWork, ISystemClock systemClock)
         {
             RuleFor(command => command.Name)
                 .NotNullOrEmpty();
 
             RuleFor(command => command.BirthDate)
-                .Must(birthDate => birthDate <= dateTimeProvider.BrasiliaNow.Date)
+                .Must(birthDate => birthDate <= systemClock.UtcNow.Date)
                 .When(command => command.BirthDate >= DateTime.MinValue);
 
             RuleFor(command => command.Email)
                 .IsValidEmail()
                 .MustAsync(async (email, cancellationToken) => !await unitOfWork.UserRepository.ExistByEmailAsync(email, cancellationToken))
-                .WithMessageFromErrorCode(ReportCodeType.DuplicatedEmail); ;
+                .WithMessageFromErrorCode(ReportCodeType.DuplicatedEmail);
 
             RuleFor(command => command.PhoneNumber)
                 .IsValidPhoneNumber()

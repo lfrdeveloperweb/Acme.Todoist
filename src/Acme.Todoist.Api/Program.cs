@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using Microsoft.Extensions.Internal;
 
 IdentityModelEventSource.ShowPII = true;
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -40,11 +41,20 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
 
 });
 
+
+builder.Host.UseDefaultServiceProvider(options =>
+{
+    options.ValidateOnBuild = true;
+});
+
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
     InjectorBootstrapper.Inject(containerBuilder, builder.Configuration, builder.Services, Assembly.GetExecutingAssembly()));
 
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+
+
+builder.Services.AddSingleton<ISystemClock, SystemClock>();
 
 // TODO: Move to infrastructure.
 //builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();

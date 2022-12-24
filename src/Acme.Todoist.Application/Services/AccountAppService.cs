@@ -57,4 +57,18 @@ public sealed class AccountAppService : AppServiceBase
 
         return Response.From(result);
     }
+
+    public async ValueTask<Response> UnlockAccountAsync(string userId, OperationContext operationContext, CancellationToken cancellationToken)
+    {
+        var result = await Dispatcher.Send(new UnlockAccount.Command(userId,operationContext), cancellationToken);
+
+        return Response.From(result);
+    }
+
+    public async ValueTask<Response> ForgotPasswordAsync(ForgotPasswordRequest request, OperationContext operationContext, CancellationToken cancellationToken)
+    {
+        var result = await Dispatcher.Send(new ForgotPassword.Command(request.SocialSecurityNumber, operationContext), cancellationToken);
+
+        return Response.From(result);
+    }
 }

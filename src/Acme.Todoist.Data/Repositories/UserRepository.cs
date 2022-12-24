@@ -1,4 +1,5 @@
 ﻿using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
 using Acme.Todoist.Infrastructure.Data;
@@ -48,6 +49,19 @@ public sealed class UserRepository : Repository, IUserRepository
             sql: commandText,
             map: MapProperties,
             param: new { Id = id },
+            transaction: base.Transaction);
+
+        return query.FirstOrDefault();
+    }
+
+    public async Task<User> GetBySocialSecurityNumberAsync(string socialSecurityNumber, CancellationToken cancellationToken)
+    {
+        const string commandText = $"{BaseSelectCommandText} WHERE u.social_security_number = @SocialSecurityNumber";
+
+        var query = await base.Connection.QueryAsync<User, Membership, Membership, User>(
+            sql: commandText,
+        map: MapProperties,
+            param: new { SocialSecurityNumber = socialSecurityNumber },
             transaction: base.Transaction);
 
         return query.FirstOrDefault();
@@ -160,21 +174,25 @@ public sealed class UserRepository : Repository, IUserRepository
             IsLocked = user.IsLocked,
             AccessFailedCount = user.AccessFailedCount,
             UpdatedAt = user.UpdatedAt,
-            UpdatedBy = user.UpdatedBy?.Id
+            UpdatedBy = user.UpdatedBy.Id
         }, cancellationToken);
     }
     
-    public Task ChangePasswordAsync(string id, string passwordHash, CancellationToken cancellationToken)
+    public Task ChangePasswordAsync(User user, CancellationToken cancellationToken)
     {
         const string commandText = @"
 			UPDATE ""user""
                SET password_hash = @PasswordHash
+                 , updated_by = @UpdatedBy
+                 , updated_at = @UpdatedAt
              WHERE user_id = @Id";
 
         return ExecuteWithTransactionAsync(commandText, new
         {
-            Id = id,
-            PasswordHash = passwordHash
+            Id = user.Id,
+            PasswordHash = user.PasswordHash,
+            UpdatedAt = user.UpdatedAt,
+            UpdatedBy = user.UpdatedBy.Id
         }, cancellationToken);
     }
 

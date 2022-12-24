@@ -17,6 +17,7 @@ namespace Acme.Todoist.Data
         private bool _disposed;
 
         private IUserRepository _userRepository;
+        private IUserTokenRepository _userTokenRepository;
         private IProjectRepository _projectRepository;
         private ITodoRepository _todoRepository;
 
@@ -31,6 +32,8 @@ namespace Acme.Todoist.Data
         public IDbConnector DbConnector { get; }
 
         public IUserRepository UserRepository => _userRepository ??= new UserRepository(DbConnector);
+
+        public IUserTokenRepository UserTokenRepository => _userTokenRepository ??= new UserTokenRepository(DbConnector);
 
         public IProjectRepository ProjectRepository => _projectRepository ??= new ProjectRepository(DbConnector);
 

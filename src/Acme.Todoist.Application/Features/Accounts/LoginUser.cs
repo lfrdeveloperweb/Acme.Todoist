@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Acme.Todoist.Application.Core.Commands;
+﻿using Acme.Todoist.Application.Core.Commands;
 using Acme.Todoist.Application.Core.Commons;
 using Acme.Todoist.Application.Core.Security;
 using Acme.Todoist.Application.Extensions;
@@ -10,8 +8,10 @@ using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Resources;
 using Acme.Todoist.Domain.Security;
-using MediatR;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acme.Todoist.Application.Features.Accounts;
 
@@ -22,11 +22,11 @@ public static class LoginUser
         string Password,
         OperationContext Context) : Command<CommandResult<JwtToken>>(Context);
 
-    public sealed class CommandHandler : CommandHandler<Command, CommandResult<JwtToken>>
+    internal sealed class CommandHandler : CommandHandler<Command, CommandResult<JwtToken>>
     {
         private readonly ISecurityService _securityService;
         private readonly IJwtProvider _jwtProvider;
-        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ISystemClock _systemClock;
 
         public CommandHandler(
             ILoggerFactory loggerFactory,
@@ -34,11 +34,11 @@ public static class LoginUser
             ICommandValidator<Command> validator,
             ISecurityService securityService,
             IJwtProvider jwtProvider,
-            IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator)
+            ISystemClock systemClock) : base(loggerFactory, unitOfWork, validator)
         {
             _securityService = securityService;
             _jwtProvider = jwtProvider;
-            _dateTimeProvider = dateTimeProvider;
+            _systemClock = systemClock;
         }
 
         protected override async Task<CommandResult<JwtToken>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
@@ -64,7 +64,7 @@ public static class LoginUser
 
                 if (signInResult.IsLockedOut)
                 {
-                    user.Lock();
+                    user.Lock(_systemClock.UtcNow);
 
                     await UnitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
 
@@ -83,7 +83,7 @@ public static class LoginUser
             var jwtToken = _jwtProvider.Generate(user);
 
             user.ResetAccessFailedCount();
-            user.IncreaseAccessCount(_dateTimeProvider.UtcNow);
+            user.IncreaseAccessCount(_systemClock.UtcNow);
 
             await UnitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
 
@@ -96,14 +96,9 @@ public static class LoginUser
     /// <summary>
     /// Validator to validate request information about <see cref="User"/>.
     /// </summary>
-    public sealed class CommandValidator : CommandValidator<Command>
+    internal sealed class CommandValidator : CommandValidator<Command>
     {
         public CommandValidator()
-        {
-            SetupValidation();
-        }
-
-        private void SetupValidation()
         {
             RuleFor(command => command.Email)
                 .NotNullOrEmpty();

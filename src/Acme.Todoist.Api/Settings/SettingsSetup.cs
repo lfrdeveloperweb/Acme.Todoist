@@ -1,4 +1,5 @@
-﻿using Acme.Todoist.Infrastructure.Security;
+﻿using Acme.Todoist.Application.Settings;
+using Acme.Todoist.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 

@@ -9,6 +9,7 @@ using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
 using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Acme.Todoist.Application.Features.Projects;
@@ -23,7 +24,7 @@ public static class CreateProject
     public sealed class CommandHandler : CommandHandler<Command, CommandResult<Project>>
     {
         private readonly IKeyGenerator _keyGenerator;
-        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ISystemClock _systemClock;
 
         public CommandHandler(
             ILoggerFactory loggerFactory,
@@ -31,10 +32,10 @@ public static class CreateProject
             ICommandValidator<Command> validator,
             IMapper mapper,
             IKeyGenerator keyGenerator,
-            IDateTimeProvider dateTimeProvider) : base(loggerFactory, unitOfWork, validator, mapper: mapper)
+            ISystemClock systemClock) : base(loggerFactory, unitOfWork, validator, mapper: mapper)
         {
             _keyGenerator = keyGenerator;
-            _dateTimeProvider = dateTimeProvider;
+            _systemClock = systemClock;
         }
 
         protected override async Task<CommandResult<Project>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
@@ -43,7 +44,7 @@ public static class CreateProject
 
             project.Id = _keyGenerator.Generate();
             project.CreatedBy = Membership.From(command.OperationContext.Identity);
-            project.CreatedAt = _dateTimeProvider.BrasiliaNow;
+            project.CreatedAt = _systemClock.UtcNow;
 
             await UnitOfWork.ProjectRepository.CreateAsync(project, cancellationToken);
 
@@ -57,12 +58,12 @@ public static class CreateProject
     public sealed class CommandValidator : CommandValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ISystemClock _systemClock;
 
-        public CommandValidator(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider)
+        public CommandValidator(IUnitOfWork unitOfWork, ISystemClock systemClock)
         {
             _unitOfWork = unitOfWork;
-            _dateTimeProvider = dateTimeProvider;
+            _systemClock = systemClock;
 
             SetupValidation();
         }

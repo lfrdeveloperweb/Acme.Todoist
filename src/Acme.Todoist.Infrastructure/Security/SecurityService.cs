@@ -4,6 +4,7 @@ using Acme.Todoist.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using Acme.Todoist.Application.Settings;
 
 namespace Acme.Todoist.Infrastructure.Security
 {

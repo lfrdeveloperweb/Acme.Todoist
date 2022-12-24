@@ -11,17 +11,14 @@ namespace Acme.Todoist.Application.Features.Accounts
     {
         public sealed record Query(string Id, OperationContext OperationContext) : Query<QueryResult<User>>(OperationContext);
 
-        public sealed class QueryHandler : IQueryHandler<Query, QueryResult<User>>
+        internal sealed class QueryHandler : IQueryHandler<Query, QueryResult<User>>
         {
-            private readonly IUserRepository _userRepository;
+            private readonly IUnitOfWork _unitOfWork;
 
-            public QueryHandler(IUserRepository userRepository)
-            {
-                _userRepository = userRepository;
-            }
+            public QueryHandler(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
             public async Task<QueryResult<User>> Handle(Query query, CancellationToken cancellationToken) =>
-                QueryResult.OkOrNotFound(await _userRepository.GetByIdAsync(query.Id, cancellationToken));
+                QueryResult.OkOrNotFound(await _unitOfWork.UserRepository.GetByIdAsync(query.Id, cancellationToken));
         }
     }
 }
