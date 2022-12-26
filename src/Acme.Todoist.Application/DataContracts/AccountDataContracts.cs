@@ -1,6 +1,5 @@
 ﻿using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Security;
-using Destructurama.Attributed;
 using System;
 using System.ComponentModel.DataAnnotations;
 

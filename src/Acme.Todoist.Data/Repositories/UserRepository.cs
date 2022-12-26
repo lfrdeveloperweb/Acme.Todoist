@@ -7,6 +7,7 @@ using Dapper;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Domain.Specs.Core;
 
 namespace Acme.Todoist.Data.Repositories;
 
@@ -39,6 +40,12 @@ public sealed class UserRepository : Repository, IUserRepository
                 ON modifier.user_id = u.updated_by";
 
     public UserRepository(IDbConnector dbConnector) : base(dbConnector) { }
+
+
+    public async Task<User> GetAsync(Specification<User> spec, CancellationToken cancellationToken)
+    {
+        return new User();
+    }
 
     /// <inheritdoc />
     public async Task<User> GetByIdAsync(string id, CancellationToken cancellationToken)

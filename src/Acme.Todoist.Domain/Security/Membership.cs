@@ -5,9 +5,9 @@
     /// </summary>
     public sealed record Membership
     {
-        public string Id { get; init; }
+        public required string Id { get; init; }
 
-        public string Name { get; init; }
+        public required string Name { get; init; }
 
         public static Membership From(IIdentityContext identityContext) => new()
         {

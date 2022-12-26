@@ -13,6 +13,8 @@ using Acme.Todoist.Domain.Security;
 using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Options;
 using Acme.Todoist.Application.Settings;
+using MediatR;
+using Acme.Todoist.Domain.Events.Accounts;
 
 namespace Acme.Todoist.Application.Features.Accounts
 {
@@ -22,6 +24,7 @@ namespace Acme.Todoist.Application.Features.Accounts
 
         internal sealed class CommandHandler : CommandHandler<Command>
         {
+            private readonly IPublisher _bus;
             private readonly ISecurityService _securityService;
             private readonly IKeyGenerator _keyGenerator;
             private readonly ISystemClock _systemClock;
@@ -30,11 +33,13 @@ namespace Acme.Todoist.Application.Features.Accounts
             public CommandHandler(
                 ILoggerFactory loggerFactory,
                 IUnitOfWork unitOfWork,
+                IPublisher bus,
                 ISecurityService securityService,
                 IKeyGenerator keyGenerator,
                 ISystemClock systemClock,
                 IOptionsSnapshot<AccountSettings> accountSettings) : base(loggerFactory, unitOfWork)
             {
+                _bus = bus;
                 _securityService = securityService;
                 _keyGenerator = keyGenerator;
                 _systemClock = systemClock;
@@ -54,6 +59,8 @@ namespace Acme.Todoist.Application.Features.Accounts
                     data: user.Email);
 
                 await UnitOfWork.UserTokenRepository.CreateAsync(userToken);
+
+                await _bus.Publish(new ForgotPasswordEvent(command.SocialSecurityNumber, userToken.Value));
 
                 return CommandResult.NoContent();
             }

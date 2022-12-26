@@ -33,19 +33,20 @@ public sealed class AccountController : ApiController
         BuildActionResult(await _service.GetProfileAsync(OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
     [HttpPost("confirm-phone-number")]
-    public async Task<IActionResult> ConfirmPhoneNumber([FromBody] ConfirmPhoneNumberRequest request) => Ok();
+    public async Task<IActionResult> ConfirmPhoneNumber([FromBody] ConfirmPhoneNumberRequest request, CancellationToken cancellationToken) => Ok();
 
     [HttpPost("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request) => Ok();
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken) => Ok();
 
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request) => Ok();
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request, CancellationToken cancellationToken) =>
+        BuildActionResult(await _service.ForgotPasswordAsync(request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
     [HttpPut("reset-password")]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request) => Ok();
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken) => Ok();
 
     [HttpPut("change-password")]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request) => Ok();
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken) => Ok();
 
     [HttpPost("{id}/lock")]
     public async Task<IActionResult> LockAsync(string id, CancellationToken cancellationToken) =>
