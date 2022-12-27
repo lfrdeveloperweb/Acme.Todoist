@@ -20,10 +20,12 @@ namespace Acme.Todoist.Application.Features.Accounts;
 public static class RegisterAccount
 {
     public sealed record Command(
+        string DocumentNumber,
         string Name,
         DateTime? BirthDate,
         string Email,
         string PhoneNumber,
+        string UserName,
         string Password,
         string ConfirmPassword,
         OperationContext Context) : Command<CommandResult<User>>(Context);
@@ -70,10 +72,16 @@ public static class RegisterAccount
             RuleFor(command => command.Name)
                 .NotNullOrEmpty();
 
+            RuleFor(command => command.DocumentNumber)
+                .NotNullOrEmpty()
+                .IsValidCpf()
+                .MustAsync(async (documentNumber, cancellationToken) => !await unitOfWork.UserRepository.ExistByDocumentNumberAsync(documentNumber, cancellationToken))
+                .WithMessageFromErrorCode(ReportCodeType.DuplicatedDocumentNumber);
+
             RuleFor(command => command.BirthDate)
                 .Must(birthDate => birthDate <= systemClock.UtcNow.Date)
                 .When(command => command.BirthDate >= DateTime.MinValue);
-
+            
             RuleFor(command => command.Email)
                 .IsValidEmail()
                 .MustAsync(async (email, cancellationToken) => !await unitOfWork.UserRepository.ExistByEmailAsync(email, cancellationToken))
@@ -83,6 +91,11 @@ public static class RegisterAccount
                 .IsValidPhoneNumber()
                 .MustAsync(async (phoneNumber, cancellationToken) => !await unitOfWork.UserRepository.ExistByPhoneNumberAsync(phoneNumber, cancellationToken))
                 .WithMessageFromErrorCode(ReportCodeType.DuplicatedPhoneNumber);
+            
+            RuleFor(command => command.UserName)
+                .NotNullOrEmpty()
+                .MustAsync(async (userName, cancellationToken) => !await unitOfWork.UserRepository.ExistByUserNameAsync(userName, cancellationToken))
+                .WithMessageFromErrorCode(ReportCodeType.DuplicatedUserName);
 
             RuleFor(request => request.Password)
                 .NotNullOrEmpty()

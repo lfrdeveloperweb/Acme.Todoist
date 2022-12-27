@@ -2,12 +2,12 @@
 using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
+using Acme.Todoist.Domain.Specs.Core;
 using Acme.Todoist.Infrastructure.Data;
 using Dapper;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Acme.Todoist.Domain.Specs.Core;
 
 namespace Acme.Todoist.Data.Repositories;
 
@@ -22,6 +22,7 @@ public sealed class UserRepository : Repository, IUserRepository
 	             , u.phone_number
                  , u.phone_number_confirmed
 	             , u.role_id as role
+                 , u.user_name
 	             , u.password_hash
 	             , u.last_login_at
                  , u.login_count
@@ -40,8 +41,7 @@ public sealed class UserRepository : Repository, IUserRepository
                 ON modifier.user_id = u.updated_by";
 
     public UserRepository(IDbConnector dbConnector) : base(dbConnector) { }
-
-
+    
     public async Task<User> GetAsync(Specification<User> spec, CancellationToken cancellationToken)
     {
         return new User();
@@ -55,20 +55,20 @@ public sealed class UserRepository : Repository, IUserRepository
         var query = await base.Connection.QueryAsync<User, Membership, Membership, User>(
             sql: commandText,
             map: MapProperties,
-            param: new { Id = id },
+            param: new { id },
             transaction: base.Transaction);
 
         return query.FirstOrDefault();
     }
 
-    public async Task<User> GetBySocialSecurityNumberAsync(string socialSecurityNumber, CancellationToken cancellationToken)
+    public async Task<User> GetByDocumentNumberAsync(string documentNumber, CancellationToken cancellationToken)
     {
-        const string commandText = $"{BaseSelectCommandText} WHERE u.social_security_number = @SocialSecurityNumber";
+        const string commandText = $"{BaseSelectCommandText} WHERE u.document_number = @DocumentNumber";
 
         var query = await base.Connection.QueryAsync<User, Membership, Membership, User>(
             sql: commandText,
         map: MapProperties,
-            param: new { SocialSecurityNumber = socialSecurityNumber },
+            param: new { documentNumber },
             transaction: base.Transaction);
 
         return query.FirstOrDefault();
@@ -81,7 +81,20 @@ public sealed class UserRepository : Repository, IUserRepository
         var query = await base.Connection.QueryAsync<User, Membership, Membership, User>(
             sql: commandText,
             map: MapProperties,
-            param: new { Email = email },
+            param: new { email },
+            transaction: base.Transaction);
+
+        return query.FirstOrDefault();
+    }
+
+    public async Task<User> GetByUserNameAsync(string userName, CancellationToken cancellationToken)
+    {
+        const string commandText = $"{BaseSelectCommandText} WHERE u.user_name = @UserName";
+
+        var query = await base.Connection.QueryAsync<User, Membership, Membership, User>(
+            sql: commandText,
+            map: MapProperties,
+            param: new { userName },
             transaction: base.Transaction);
 
         return query.FirstOrDefault();
@@ -93,6 +106,14 @@ public sealed class UserRepository : Repository, IUserRepository
             @"SELECT 1 FROM ""user"" WHERE user_id = @Id;";
 
         return ExistsWithTransactionAsync(commandText, new { id }, cancellationToken);
+    }
+
+    public Task<bool> ExistByDocumentNumberAsync(string documentNumber, CancellationToken cancellationToken)
+    {
+        const string commandText =
+            @"SELECT 1 FROM ""user"" WHERE document_number = @DocumentNumber;";
+
+        return ExistsWithTransactionAsync(commandText, new { DocumentNumber = documentNumber }, cancellationToken);
     }
 
     public Task<bool> ExistByEmailAsync(string email, CancellationToken cancellationToken)
@@ -110,6 +131,14 @@ public sealed class UserRepository : Repository, IUserRepository
 
         return ExistsWithTransactionAsync(commandText, new { phoneNumber }, cancellationToken);
     }
+    
+    public Task<bool> ExistByUserNameAsync(string userName, CancellationToken cancellationToken)
+    {
+        const string commandText =
+            @"SELECT 1 FROM ""user"" WHERE user_name = @UserName;";
+
+        return ExistsWithTransactionAsync(commandText, new { userName }, cancellationToken);
+    }
 
     public Task CreateAsync(User user, CancellationToken cancellationToken)
     {
@@ -117,11 +146,13 @@ public sealed class UserRepository : Repository, IUserRepository
                 INSERT INTO ""user""
                 (
                     user_id,
+                    document_number,
                     name,
                     email,
                     birth_date,
 	                phone_number,
 	                role_id,
+                    user_name,
 	                password_hash,
                     created_at,
                     created_by
@@ -129,11 +160,13 @@ public sealed class UserRepository : Repository, IUserRepository
                 VALUES 
                 (
                     @Id,
+                    @DocumentNumber,
                     @Name,
                     @Email,
                     @BirthDate,
 	                @PhoneNumber,
 	                @Role,
+                    @UserName,
                     @PasswordHash,
                     @CreatedAt,
                     @CreatedBy
@@ -141,14 +174,16 @@ public sealed class UserRepository : Repository, IUserRepository
 
         return ExecuteWithTransactionAsync(commandText, new
         {
-            Id = user.Id,
-            Name = user.Name,
-            BirthDate = user.BirthDate,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber,
-            PasswordHash = user.PasswordHash,
-            Role = user.Role,
-            CreatedAt = user.CreatedAt,
+            user.Id,
+            user.DocumentNumber,
+            user.Name,
+            user.BirthDate,
+            user.Email,
+            user.PhoneNumber,
+            user.UserName,
+            user.PasswordHash,
+            user.Role,
+            user.CreatedAt,
             CreatedBy = user.CreatedBy?.Id
         }, cancellationToken);
     }
@@ -157,7 +192,8 @@ public sealed class UserRepository : Repository, IUserRepository
     {
         const string commandText = @"
             UPDATE ""user""
-               SET name = @Name
+               SET document_number = @DocumentNumber
+                 , name = @Name
                  , birth_date = @BirthDate
 				 , email = @Email
                  , phone_number = @PhoneNumber
@@ -171,16 +207,17 @@ public sealed class UserRepository : Repository, IUserRepository
 
         return ExecuteWithTransactionAsync(commandText, new
         {
-            Id = user.Id,
-            Name = user.Name,
-            BirthDate = user.BirthDate,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber,
-            LoginCount = user.LoginCount,
-            LastLoginAt = user.LastLoginAt,
-            IsLocked = user.IsLocked,
-            AccessFailedCount = user.AccessFailedCount,
-            UpdatedAt = user.UpdatedAt,
+            user.Id,
+            user.DocumentNumber,
+            user.Name,
+            user.BirthDate,
+            user.Email,
+            user.PhoneNumber,
+            user.LoginCount,
+            user.LastLoginAt,
+            user.IsLocked,
+            user.AccessFailedCount,
+            user.UpdatedAt,
             UpdatedBy = user.UpdatedBy.Id
         }, cancellationToken);
     }
@@ -196,9 +233,9 @@ public sealed class UserRepository : Repository, IUserRepository
 
         return ExecuteWithTransactionAsync(commandText, new
         {
-            Id = user.Id,
-            PasswordHash = user.PasswordHash,
-            UpdatedAt = user.UpdatedAt,
+            user.Id,
+            user.PasswordHash,
+            user.UpdatedAt,
             UpdatedBy = user.UpdatedBy.Id
         }, cancellationToken);
     }

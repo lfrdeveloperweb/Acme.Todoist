@@ -8,10 +8,12 @@ namespace Acme.Todoist.Application.DataContracts
     namespace Requests
     {
         public sealed record RegisterAccountRequest(
+            [Required] string DocumentNumber,
             [Required] string Name,
             DateTime? BirthDate,
             [Required] string Email,
             [Required] string PhoneNumber,
+            [Required] string UserName,
             [Required] string Password,
             [Required] string ConfirmPassword);
 

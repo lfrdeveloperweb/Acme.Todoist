@@ -20,6 +20,7 @@
         DuplicatedDocumentNumber,
         DuplicatedEmail,
         DuplicatedPhoneNumber,
+        DuplicatedUserName,
 
         UserIsLockedOut,
         UserCannotLockItself,

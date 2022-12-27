@@ -18,10 +18,12 @@ public sealed class AccountAppService : AppServiceBase
     public async ValueTask<Response> RegisterAccountAsync(RegisterAccountRequest request, OperationContext operationContext, CancellationToken cancellationToken)
     {
         var command = new RegisterAccount.Command(
+            request.DocumentNumber,
             request.Name,
             request.BirthDate,
             request.Email?.ToLower(),
             request.PhoneNumber,
+            request.UserName?.ToLower(),
             request.Password,
             request.ConfirmPassword,
             operationContext);

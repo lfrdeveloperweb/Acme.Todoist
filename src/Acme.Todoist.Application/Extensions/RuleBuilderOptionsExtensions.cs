@@ -66,6 +66,18 @@ namespace Acme.Todoist.Application.Extensions
         }
 
         /// <summary>
+        /// Validation will fail if the cpf is invalid.
+        /// </summary>
+        public static IRuleBuilderOptions<T, string> IsValidCpf<T>(this IRuleBuilder<T, string> rule)
+        {
+            return rule
+                .NotNullOrEmpty()
+                .MaxLength(Cpf.MaxLength)
+                .Must(Cpf.IsValid)
+                .WithMessageFromErrorCode(ReportCodeType.InvalidEmail);
+        }
+
+        /// <summary>
         /// Validation will fail if the email address is invalid.
         /// </summary>
         public static IRuleBuilderOptions<T, string> IsValidEmail<T>(this IRuleBuilder<T, string> rule)
@@ -73,7 +85,7 @@ namespace Acme.Todoist.Application.Extensions
             return rule
                 .NotNullOrEmpty()
                 .MaxLength(Email.MaxLength)
-                .Must(Email.IsValidEmailAddress)
+                .Must(Email.IsValid)
                 .WithMessageFromErrorCode(ReportCodeType.InvalidEmail);
         }
 
@@ -85,8 +97,7 @@ namespace Acme.Todoist.Application.Extensions
             return rule
                 .NotNullOrEmpty()
                 .MaxLength(PhoneNumber.MaxLength)
-                .IsValidPhoneNumber()
-                .Must(PhoneNumber.IsValidPhoneNumber)
+                .Must(PhoneNumber.IsValid)
                 .WithMessageFromErrorCode(ReportCodeType.InvalidPhoneNumber);
         }
 

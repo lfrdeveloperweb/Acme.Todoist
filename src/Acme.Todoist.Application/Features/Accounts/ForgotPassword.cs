@@ -48,7 +48,7 @@ namespace Acme.Todoist.Application.Features.Accounts
 
             protected override async Task<CommandResult> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
             {
-                var user = await UnitOfWork.UserRepository.GetBySocialSecurityNumberAsync(command.SocialSecurityNumber, cancellationToken);
+                var user = await UnitOfWork.UserRepository.GetByDocumentNumberAsync(command.SocialSecurityNumber, cancellationToken);
                 if (user is null) return CommandResult.NotFound();
 
                 var userToken = new UserToken<UserResetPasswordTokenData>(

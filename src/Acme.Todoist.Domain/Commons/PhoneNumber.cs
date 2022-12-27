@@ -14,7 +14,7 @@ namespace Acme.Todoist.Domain.Commons
         /// </summary>
         /// <param name="source">String to be checked.</param>
         /// <returns>Return true if the string has a valid brazilian phone number format.</returns>
-        public static bool IsValidPhoneNumber(string source)
+        public static bool IsValid(string source)
         {
             if (string.IsNullOrWhiteSpace(source))
                 return false;

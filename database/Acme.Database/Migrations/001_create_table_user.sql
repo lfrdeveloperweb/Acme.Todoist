@@ -1,15 +1,15 @@
 ﻿CREATE TABLE "user"
 (
 	"user_id"				varchar(32)		CONSTRAINT user_pk PRIMARY KEY,
-	social_security_number	varchar(11)		NOT NULL,
+	document_number			varchar(11)		NOT NULL CONSTRAINT user_document_number_un UNIQUE,
 	name					varchar(128)	NOT NULL,
 	birth_date				date			NULL,
-	"user_name"				varchar(32)		NOT NULL,
 	email					varchar(128)	NOT NULL,
 	email_confirmed			BOOLEAN         NOT NULL DEFAULT FALSE,	
 	phone_number			varchar(20)		NULL,
 	phone_number_confirmed  BOOLEAN         NOT NULL DEFAULT FALSE,
 	role_id					SMALLINT        NOT NULL,
+	"user_name"				varchar(32)		NOT NULL,
 	password_hash			varchar(128)	NOT NULL,
 	last_login_at			timestamptz    	NULL,
     login_count				SMALLINT		NOT NULL	DEFAULT 0,
