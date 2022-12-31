@@ -17,7 +17,6 @@ namespace Acme.Todoist.Data
         private bool _disposed;
 
         private IUserRepository _userRepository;
-        private IUserTokenRepository _userTokenRepository;
         private IProjectRepository _projectRepository;
         private ITodoRepository _todoRepository;
 
@@ -33,8 +32,6 @@ namespace Acme.Todoist.Data
 
         public IUserRepository UserRepository => _userRepository ??= new UserRepository(DbConnector);
 
-        public IUserTokenRepository UserTokenRepository => _userTokenRepository ??= new UserTokenRepository(DbConnector);
-
         public IProjectRepository ProjectRepository => _projectRepository ??= new ProjectRepository(DbConnector);
 
         public ITodoRepository TodoRepository => _todoRepository ??= new TodoRepository(DbConnector);
@@ -43,18 +40,15 @@ namespace Acme.Todoist.Data
         /// Initiates a transaction under the connection held an instance of <see cref="UnitOfWork"/>.
         /// </summary>
         /// <param name="isolationLevel">Transaction isolation level. Default: <see cref="IsolationLevel.ReadUncommitted"/>.</param>
-        public void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadUncommitted)
-        {
+        public void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadUncommitted) => 
             DbConnector.BeginTransaction(isolationLevel);
-        }
 
         /// <summary>
         /// Commits the transaction.
         /// </summary>
         public void CommitTransaction()
         {
-            var connectionIsOpen = DbConnector?.Transaction?.Connection?.State == ConnectionState.Open;
-            if (connectionIsOpen)
+            if (DbConnector?.Transaction?.Connection?.State == ConnectionState.Open)
             {
                 DbConnector.Transaction.Commit();
             }
@@ -65,8 +59,7 @@ namespace Acme.Todoist.Data
         /// </summary>
         public void RollbackTransaction()
         {
-            var connectionIsOpen = DbConnector?.Transaction?.Connection?.State == ConnectionState.Open;
-            if (connectionIsOpen)
+            if (DbConnector?.Transaction?.Connection?.State == ConnectionState.Open)
             {
                 DbConnector.Transaction.Rollback();
             }

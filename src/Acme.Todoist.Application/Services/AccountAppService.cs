@@ -33,43 +33,82 @@ public sealed class AccountAppService : AppServiceBase
         return Response.From(result);
     }
 
-    public async ValueTask<Response<JwtTokenResponseData>> LoginAsync(LoginRequest request, OperationContext operationContext, CancellationToken cancellationToken)
+    public async ValueTask<Response<JwtTokenResponseData>> LoginAsync(LoginRequest request, OperationContext context, CancellationToken cancellationToken)
     {
         var command = new LoginUser.Command(
             request.Email,
             request.Password,
-            operationContext);
+            context);
 
         var result = await Dispatcher.Send(command, cancellationToken);
 
         return Response.From<JwtToken, JwtTokenResponseData>(result, Mapper);
     }
     
-    public async ValueTask<Response<UserResponseData>> GetProfileAsync(OperationContext operationContext, CancellationToken cancellationToken)
+    public async ValueTask<Response<UserResponseData>> GetProfileAsync(OperationContext context, CancellationToken cancellationToken)
     {
-        var query = new GetUserDetails.Query(operationContext.Identity.Id, operationContext);
-        var result = await Dispatcher.Send(query, cancellationToken);
+        var result = await Dispatcher.Send(new GetUserDetails.Query(context.Identity.Id, context), cancellationToken);
 
         return Response.From<User, UserResponseData>(result, Mapper);
     }
 
-    public async ValueTask<Response> LockAccountAsync(string userId, OperationContext operationContext, CancellationToken cancellationToken)
+    public async ValueTask<Response> LockAccountAsync(string userId, OperationContext context, CancellationToken cancellationToken)
     {
-        var result = await Dispatcher.Send(new LockAccount.Command(userId,operationContext), cancellationToken);
+        var result = await Dispatcher.Send(new LockAccount.Command(userId,context), cancellationToken);
 
         return Response.From(result);
     }
 
-    public async ValueTask<Response> UnlockAccountAsync(string userId, OperationContext operationContext, CancellationToken cancellationToken)
+    public async ValueTask<Response> UnlockAccountAsync(string userId, OperationContext context, CancellationToken cancellationToken)
     {
-        var result = await Dispatcher.Send(new UnlockAccount.Command(userId,operationContext), cancellationToken);
+        var result = await Dispatcher.Send(new UnlockAccount.Command(userId,context), cancellationToken);
 
         return Response.From(result);
     }
 
-    public async ValueTask<Response> ForgotPasswordAsync(ForgotPasswordRequest request, OperationContext operationContext, CancellationToken cancellationToken)
+    public async ValueTask<Response> ForgotPasswordAsync(ForgotPasswordRequest request, OperationContext context, CancellationToken cancellationToken)
     {
-        var result = await Dispatcher.Send(new ForgotPassword.Command(request.SocialSecurityNumber, operationContext), cancellationToken);
+        var result = await Dispatcher.Send(new ForgotPassword.Command(request.DocumentNumber, context), cancellationToken);
+
+        return Response.From(result);
+    }
+
+    public async Task<Response> ResetPasswordAsync(ResetPasswordRequest request, OperationContext context, CancellationToken cancellationToken)
+    {
+        var command = new ResetPassword.Command(
+            request.DocumentNumber, 
+            request.Password,
+            request.NewPassword,
+            request.ConfirmPassword,
+            request.Token,
+            context);
+        
+        var result = await Dispatcher.Send(command, cancellationToken);
+
+        return Response.From(result);
+    }
+
+    public async Task<Response> ChangePasswordAsync(ChangePasswordRequest request, OperationContext context, CancellationToken cancellationToken)
+    {
+        var command = new ChangePassword.Command(
+            request.CurrentPassword,
+            request.NewPassword,
+            request.ConfirmNewPassword,
+            context);
+
+        var result = await Dispatcher.Send(command, cancellationToken);
+
+        return Response.From(result);
+    }
+
+    public async Task<Response> ConfirmEmailAsync(ConfirmEmailRequest request, OperationContext context, CancellationToken cancellationToken)
+    {
+        var command = new ConfirmEmail.Command(
+            request.Email,
+            request.Token,
+            context);
+
+        var result = await Dispatcher.Send(command, cancellationToken);
 
         return Response.From(result);
     }

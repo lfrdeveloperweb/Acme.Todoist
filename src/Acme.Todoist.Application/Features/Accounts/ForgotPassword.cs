@@ -20,7 +20,7 @@ namespace Acme.Todoist.Application.Features.Accounts
 {
     public static class ForgotPassword
     {
-        public record Command(string SocialSecurityNumber, OperationContext Context) : Command<CommandResult>(Context);
+        public record Command(string DocumentNumber, OperationContext Context) : Command<CommandResult>(Context);
 
         internal sealed class CommandHandler : CommandHandler<Command>
         {
@@ -48,7 +48,7 @@ namespace Acme.Todoist.Application.Features.Accounts
 
             protected override async Task<CommandResult> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
             {
-                var user = await UnitOfWork.UserRepository.GetByDocumentNumberAsync(command.SocialSecurityNumber, cancellationToken);
+                var user = await UnitOfWork.UserRepository.GetByDocumentNumberAsync(command.DocumentNumber, cancellationToken);
                 if (user is null) return CommandResult.NotFound();
 
                 var userToken = new UserToken<UserResetPasswordTokenData>(
@@ -60,7 +60,7 @@ namespace Acme.Todoist.Application.Features.Accounts
 
                 await UnitOfWork.UserTokenRepository.CreateAsync(userToken);
 
-                await _bus.Publish(new ForgotPasswordEvent(command.SocialSecurityNumber, userToken.Value));
+                await _bus.Publish(new ForgotPasswordEvent(command.DocumentNumber, userToken.Value));
 
                 return CommandResult.NoContent();
             }
@@ -70,7 +70,7 @@ namespace Acme.Todoist.Application.Features.Accounts
         {
             public CommandValidator(IUnitOfWork unitOfWork)
             {
-                RuleFor(command => command.SocialSecurityNumber)
+                RuleFor(command => command.DocumentNumber)
                     .IsValidEmail()
                     .MustAsync(unitOfWork.UserRepository.ExistByEmailAsync)
                     .WithMessageFromErrorCode(ReportCodeType.InvalidEmail);

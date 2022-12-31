@@ -53,11 +53,16 @@ namespace Acme.Todoist.Application.Core.Commands
                     }
                 }
 
-                commandResult = await ProcessCommandAsync(command, cancellationToken);
+                UnitOfWork.BeginTransaction();
 
+                commandResult = await ProcessCommandAsync(command, cancellationToken);
                 if (commandResult.IsSuccessStatusCode)
                 {
-
+                    UnitOfWork?.CommitTransaction();
+                }
+                else
+                {
+                    UnitOfWork.RollbackTransaction();
                 }
             }
             //catch (AbortCommandException ex)
@@ -71,6 +76,8 @@ namespace Acme.Todoist.Application.Core.Commands
             catch (Exception ex)
             {
                 Logger.LogError(ex, ex.Message);
+
+                UnitOfWork?.RollbackTransaction();
 
                 commandResult = CommandResult.InternalServerError<TCommandResult>(ex);
             }

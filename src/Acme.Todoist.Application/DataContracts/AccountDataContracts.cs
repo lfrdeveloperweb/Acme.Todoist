@@ -31,12 +31,13 @@ namespace Acme.Todoist.Application.DataContracts
             [Required] string Token);
 
         public sealed record ForgotPasswordRequest(
-            string SocialSecurityNumber);
+            string DocumentNumber);
 
         public sealed record ResetPasswordRequest(
-            string SocialSecurityNumber,
+            string DocumentNumber,
             string Token,
             string Password,
+            string NewPassword,
             string ConfirmPassword);
 
         public sealed record ChangePasswordRequest(

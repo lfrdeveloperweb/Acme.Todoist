@@ -32,21 +32,24 @@ public sealed class AccountController : ApiController
     public async Task<IActionResult> ProfileAsync(CancellationToken cancellationToken) =>
         BuildActionResult(await _service.GetProfileAsync(OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken) =>
+        BuildActionResult(await _service.ConfirmEmailAsync(request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
+
     [HttpPost("confirm-phone-number")]
     public async Task<IActionResult> ConfirmPhoneNumber([FromBody] ConfirmPhoneNumberRequest request, CancellationToken cancellationToken) => Ok();
-
-    [HttpPost("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken) => Ok();
 
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request, CancellationToken cancellationToken) =>
         BuildActionResult(await _service.ForgotPasswordAsync(request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
     [HttpPut("reset-password")]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken) => Ok();
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken) =>
+        BuildActionResult(await _service.ResetPasswordAsync(request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
     [HttpPut("change-password")]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken) => Ok();
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken) =>
+        BuildActionResult(await _service.ChangePasswordAsync(request, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
     [HttpPost("{id}/lock")]
     public async Task<IActionResult> LockAsync(string id, CancellationToken cancellationToken) =>

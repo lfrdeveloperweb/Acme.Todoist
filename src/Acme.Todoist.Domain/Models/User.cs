@@ -15,11 +15,11 @@ namespace Acme.Todoist.Domain.Models
 
         public string Email { get; set; }
 
-        public bool EmailConfirmed { get; set; }
+        public bool EmailConfirmed { get; private set; }
 
         public string PhoneNumber { get; set; }
 
-        public bool PhoneNumberConfirmed { get; set; }
+        public bool PhoneNumberConfirmed { get; private set; }
 
         public DateTime? BirthDate { get; set; }
 
@@ -36,6 +36,12 @@ namespace Acme.Todoist.Domain.Models
         public int LoginCount { get; private set; }
 
         public DateTimeOffset? LastLoginAt { get; private set; }
+
+        public void ConfirmEmail(DateTimeOffset confirmedAt)
+        {
+            EmailConfirmed = true;
+            UpdatedAt = confirmedAt;
+        }
 
         public void ChangePassword(string passwordHashed) => PasswordHash = passwordHashed;
 

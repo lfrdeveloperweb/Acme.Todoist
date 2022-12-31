@@ -1,21 +1,15 @@
 ﻿using Acme.Todoist.Application.Core.Commands;
+using Acme.Todoist.Application.Core.Cryptography;
+using Acme.Todoist.Application.Extensions;
 using Acme.Todoist.Application.Repositories;
 using Acme.Todoist.Domain.Commons;
-using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Resources;
 using Acme.Todoist.Domain.Security;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Acme.Todoist.Application.Extensions;
 using FluentValidation;
 using Microsoft.Extensions.Internal;
-using Acme.Todoist.Application.Core.Cryptography;
+using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acme.Todoist.Application.Features.Accounts;
 

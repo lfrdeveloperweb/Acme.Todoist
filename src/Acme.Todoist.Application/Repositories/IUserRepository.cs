@@ -1,6 +1,7 @@
 ﻿using Acme.Todoist.Domain.Models;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Domain.Security;
 
 namespace Acme.Todoist.Application.Repositories;
 
@@ -29,4 +30,29 @@ public interface IUserRepository
     Task UpdateAsync(User user, CancellationToken cancellationToken);
 
     Task ChangePasswordAsync(User user, CancellationToken cancellationToken);
+
+    // User tokens
+
+    Task<UserToken<TUserTokenData>> GetAsync<TUserTokenData>(string userId, UserTokenType type, string value, CancellationToken cancellationToken)
+        where TUserTokenData : IUserTokenData;
+
+    Task<bool> ExistsAsync(string userId, UserTokenType type, string value);
+
+    Task CreateAsync<TUserTokenData>(UserToken<TUserTokenData> userToken) where TUserTokenData : IUserTokenData;
+
+    Task DeleteTokenAsync(string userId, UserTokenType tokenType);
+
+    /*
+    
+    Task CreateRefreshTokenAsync(RefreshToken refreshToken);
+
+    Task<bool> RefreshTokenIsValidByTokenAndDateAsync(string token, DateTime currentDate);
+    
+    Task<RefreshToken> GetRefreshTokenByTokenAsync(string token);
+    
+    Task<RefreshToken> GetRefreshTokenByMembershipIdAsync(string membershipId, DateTime currentDate);
+    
+    Task DeleteRefreshTokenByMembershipIdAsync(string membershipId);
+
+    */
 }

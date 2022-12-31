@@ -1,4 +1,6 @@
-﻿namespace Acme.Todoist.Domain.Security
+﻿using Acme.Todoist.Domain.Models;
+
+namespace Acme.Todoist.Domain.Security
 {
     /// <summary>
     /// Represent a membership.
@@ -13,6 +15,12 @@
         {
             Id = identityContext.Id,
             Name = identityContext.Name
+        };
+         
+        public static Membership From(User user) => new()
+        {
+            Id = user.Id,
+            Name = user.Name
         };
     }
 }

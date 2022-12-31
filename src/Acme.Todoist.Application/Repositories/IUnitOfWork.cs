@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Acme.Todoist.Domain.Models;
+using System;
 using System.Data;
-using Acme.Todoist.Domain.Models;
-using Acme.Todoist.Domain.Security;
 
 namespace Acme.Todoist.Application.Repositories
 {
@@ -14,11 +13,6 @@ namespace Acme.Todoist.Application.Repositories
         /// Repository to handle information about <see cref="User"/>
         /// </summary>
         IUserRepository UserRepository { get; }
-
-        /// <summary>
-        /// Repository to handle information about <see cref="UserToken{TUserTokenData}"/>
-        /// </summary>
-        IUserTokenRepository UserTokenRepository { get; }
 
         /// <summary>
         /// Repository to handle information about <see cref="Project"/>
