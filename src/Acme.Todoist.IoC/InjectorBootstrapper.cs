@@ -28,9 +28,9 @@ namespace Acme.Todoist.IoC
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterModule(new DataModule());
-            builder.RegisterModule(new CoreModule());
-            builder.RegisterModule(new ApplicationModule());
+            builder.RegisterModule(new DataModule(services, configuration));
+            builder.RegisterModule<CoreModule>();
+            builder.RegisterModule<ApplicationModule>();
         }
     }
 }

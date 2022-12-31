@@ -1,10 +1,13 @@
-﻿using Acme.Todoist.Infrastructure.Data;
+﻿using Acme.Todoist.Data.TypeHandlers;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
-using Acme.Todoist.Data.TypeHandlers;
+using System.Data.Common;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acme.Todoist.Data.Repositories
 {
@@ -13,8 +16,6 @@ namespace Acme.Todoist.Data.Repositories
     /// </summary>
     public abstract class Repository
     {
-        private readonly IDbConnector _dbConnector;
-
         static Repository()
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -25,22 +26,24 @@ namespace Acme.Todoist.Data.Repositories
             SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
         }
 
-        protected Repository(IDbConnector dbConnector)
+        protected Repository(DbContext context)
         {
-            _dbConnector = dbConnector;
+            Context = context;
 
             // _dbConnector.Connection.TypeMapper.UseJsonNet()
         }
 
+        protected DbContext Context { get; }
+
         /// <summary>
         /// Current connection.
         /// </summary>
-        protected IDbConnection Connection => _dbConnector.Connection;
+        protected IDbConnection Connection => Context.Database.GetDbConnection();
 
         /// <summary>
         /// Current transaction.
         /// </summary>
-        protected IDbTransaction Transaction => _dbConnector.Transaction;
+        protected IDbTransaction Transaction => (Context.Database.CurrentTransaction as IInfrastructure<DbTransaction>)?.Instance;
 
         /// <summary>
         /// Executes a query and returns the first cell selected.
@@ -99,5 +102,23 @@ namespace Acme.Todoist.Data.Repositories
         /// <returns>List of records selected.</returns>
         protected Task<IEnumerable<TResult>> ToListWithTransactionAsync<TResult>(string commandText, object parameters = null, CancellationToken cancellationToken = default) =>
             Connection.QueryAsync<TResult>(new CommandDefinition(commandText, parameters, Transaction, cancellationToken: cancellationToken));
+    }
+
+    public abstract class Repository<TEntity> : Repository
+        where TEntity : class
+    {
+        protected Repository(DbContext context)
+            : base(context)
+        {
+            DbSet = Context.Set<TEntity>();
+            DbSetAsNoTracking = Context.Set<TEntity>().AsNoTrackingWithIdentityResolution();
+        }
+
+        protected virtual IQueryable<TEntity> DbSetAsNoTracking { get; }
+
+        protected DbSet<TEntity> DbSet { get; }
+
+        public virtual async Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken) =>
+            await DbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 }

@@ -58,9 +58,9 @@ namespace Acme.Todoist.Application.Features.Accounts
                     type: UserTokenType.ResetPasswordToken,
                     data: user.Email);
 
-                await UnitOfWork.UserTokenRepository.CreateAsync(userToken);
+                await UnitOfWork.UserRepository.CreateUserTokenAsync(userToken);
 
-                await _bus.Publish(new ForgotPasswordEvent(command.DocumentNumber, userToken.Value));
+                await _bus.Publish(new ForgotPasswordEvent(command.DocumentNumber, userToken.Value), cancellationToken);
 
                 return CommandResult.NoContent();
             }

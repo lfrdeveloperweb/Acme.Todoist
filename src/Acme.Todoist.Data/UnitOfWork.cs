@@ -6,6 +6,8 @@ using Acme.Todoist.Application.Repositories;
 
 namespace Acme.Todoist.Data
 {
+    /*
+
     /// <summary>
     /// Unit of work of repositories.
     /// </summary>
@@ -95,4 +97,6 @@ namespace Acme.Todoist.Data
             _disposed = true;
         }
     }
+
+    */
 }

@@ -49,7 +49,10 @@ builder.Host.UseDefaultServiceProvider(options =>
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
-    InjectorBootstrapper.Inject(containerBuilder, builder.Configuration, builder.Services, Assembly.GetExecutingAssembly()));
+{
+    InjectorBootstrapper.Inject(containerBuilder, builder.Configuration, builder.Services,
+            Assembly.GetExecutingAssembly());
+});
 
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 

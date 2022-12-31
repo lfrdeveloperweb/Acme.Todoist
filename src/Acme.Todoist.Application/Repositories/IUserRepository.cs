@@ -38,7 +38,7 @@ public interface IUserRepository
 
     Task<bool> ExistsAsync(string userId, UserTokenType type, string value);
 
-    Task CreateAsync<TUserTokenData>(UserToken<TUserTokenData> userToken) where TUserTokenData : IUserTokenData;
+    Task CreateUserTokenAsync<TUserTokenData>(UserToken<TUserTokenData> userToken) where TUserTokenData : IUserTokenData;
 
     Task DeleteTokenAsync(string userId, UserTokenType tokenType);
 

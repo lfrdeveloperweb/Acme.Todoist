@@ -1,16 +1,16 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Acme.Todoist.Application.Repositories;
+﻿using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Data.Contexts;
 using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Models.Filters;
-using Acme.Todoist.Infrastructure.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acme.Todoist.Data.Repositories;
 
 public sealed class ProjectRepository : Repository, IProjectRepository
 {
-    public ProjectRepository(IDbConnector dbConnector) : base(dbConnector) { }
+    public ProjectRepository(MainContext context) : base(context) { }
 
     public Task<Project> GetByIdAsync(string id, CancellationToken cancellationToken)
     {

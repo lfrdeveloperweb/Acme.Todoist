@@ -58,7 +58,7 @@ namespace Acme.Todoist.Application.Core.Commands
                 commandResult = await ProcessCommandAsync(command, cancellationToken);
                 if (commandResult.IsSuccessStatusCode)
                 {
-                    UnitOfWork?.CommitTransaction();
+                    UnitOfWork?.CommitTransactionAsync();
                 }
                 else
                 {

@@ -1,6 +1,7 @@
 ﻿using Acme.Todoist.Domain.Models;
 using System;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace Acme.Todoist.Application.Repositories
 {
@@ -33,7 +34,7 @@ namespace Acme.Todoist.Application.Repositories
         /// <summary>
         /// Commits the transaction.
         /// </summary>
-        void CommitTransaction();
+        Task CommitTransactionAsync();
 
         /// <summary>
         /// Rolls back the transaction.

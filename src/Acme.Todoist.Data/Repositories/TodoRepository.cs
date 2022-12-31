@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Data.Contexts;
 using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Security;
 
@@ -46,7 +47,7 @@ namespace Acme.Todoist.Data.Repositories
                  , '' as name
               FROM todo_comment c";
 
-        public TodoRepository(IDbConnector dbConnector) : base(dbConnector) { }
+        public TodoRepository(MainContext context) : base(context) { }
 
         /// <inheritdoc />
         public async Task<Todo> GetByIdAsync(string id, CancellationToken cancellationToken)

@@ -48,7 +48,7 @@ namespace Acme.Todoist.Application.Features.Accounts
 
         internal sealed class CommandValidator : CommandValidator<Command>
         {
-            public CommandValidator(IUnitOfWork unitOfWork)
+            public CommandValidator()
             {
                 RuleFor(command => command.Email)
                     .NotNullOrEmpty();

@@ -1,9 +1,8 @@
 ﻿using Acme.Todoist.Application.Repositories;
-using Acme.Todoist.Domain.Commons;
+using Acme.Todoist.Data.Contexts;
 using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
 using Acme.Todoist.Domain.Specs.Core;
-using Acme.Todoist.Infrastructure.Data;
 using Dapper;
 using System.Linq;
 using System.Threading;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Acme.Todoist.Data.Repositories;
 
-public sealed class UserRepository : Repository, IUserRepository
+public sealed class UserRepository : Repository<User>, IUserRepository
 {
     private const string BaseSelectCommandText = @"
             SELECT u.user_id as id
@@ -40,8 +39,10 @@ public sealed class UserRepository : Repository, IUserRepository
          LEFT JOIN ""user"" modifier
                 ON modifier.user_id = u.updated_by";
 
-    public UserRepository(IDbConnector dbConnector) : base(dbConnector) { }
-    
+    // public UserRepository(IDbConnector dbConnector) : base(dbConnector) { }
+
+    public UserRepository(MainContext context) : base(context) { }
+
     public async Task<User> GetAsync(Specification<User> spec, CancellationToken cancellationToken)
     {
         return new User();
@@ -281,7 +282,7 @@ public sealed class UserRepository : Repository, IUserRepository
         return ExistsWithTransactionAsync(commandText, new { UserId = userId, Type = type, Value = value });
     }
 
-    public Task CreateAsync<TUserTokenData>(UserToken<TUserTokenData> userToken) where TUserTokenData : IUserTokenData
+    public Task CreateUserTokenAsync<TUserTokenData>(UserToken<TUserTokenData> userToken) where TUserTokenData : IUserTokenData
     {
         const string commandText = @"
             INSERT INTO user_token (user_id, type, value, data, expires_at)                
