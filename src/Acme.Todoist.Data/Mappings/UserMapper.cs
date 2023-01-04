@@ -11,6 +11,7 @@ internal sealed class UserMapper : IEntityTypeConfiguration<User>
         builder.ToTable("user");
 
         builder.HasKey(it => it.Id);
-        builder.Property(x => x.Id).HasColumnName("user_id");
+        builder.Property(x => x.Id).HasColumnName("user_id")
+            .ValueGeneratedNever();
     }
 }
