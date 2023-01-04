@@ -20,7 +20,12 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using Acme.Todoist.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Internal;
+using Microsoft.Extensions.Logging;
 
 IdentityModelEventSource.ShowPII = true;
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -46,18 +51,15 @@ builder.Host.UseDefaultServiceProvider(options =>
 {
     options.ValidateOnBuild = true;
 });
-
-builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
-builder.Host.ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
-{
-    InjectorBootstrapper.Inject(containerBuilder, builder.Configuration, builder.Services,
-            Assembly.GetExecutingAssembly());
-});
-
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
-
 builder.Services.AddSingleton<ISystemClock, SystemClock>();
+
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Host.ConfigureContainer<ContainerBuilder>((context, containerBuilder) => 
+    InjectorBootstrapper.Inject(containerBuilder, builder.Configuration, builder.Services, Assembly.GetExecutingAssembly()));
+
+
 
 // TODO: Move to infrastructure.
 //builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
@@ -99,6 +101,7 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddOptions();
+builder.Services.AddMemoryCache();
 
 builder.Services.ConfigureOptions<SettingsSetup>();
 builder.Services.ConfigureOptions<JwtBearerSettingsSetup>();

@@ -35,10 +35,11 @@ namespace Acme.Todoist.Application.Features.Accounts
                 var user = await UnitOfWork.UserRepository.GetByEmailAsync(command.Email, cancellationToken);
                 if (user is null) return CommandResult.NotFound();
                 
+                var userToken = await UnitOfWork.UserRepository.GetAsync<UserEmailConfirmationTokenData>(user.Id, UserTokenType.EmailConfirmationToken, command.Token, cancellationToken);
+
+
                 user.ConfirmEmail(_systemClock.UtcNow);
                 user.UpdatedBy = Membership.From(user);
-
-                await UnitOfWork.UserRepository.GetAsync<UserEmailConfirmationTokenData>(user.Id, UserTokenType.EmailConfirmationToken, command.Token, cancellationToken);
 
                 await UnitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
 

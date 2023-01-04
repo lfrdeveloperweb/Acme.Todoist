@@ -219,7 +219,7 @@ public sealed class UserRepository : Repository<User>, IUserRepository
             user.IsLocked,
             user.AccessFailedCount,
             user.UpdatedAt,
-            UpdatedBy = user.UpdatedBy.Id
+            UpdatedBy = user.UpdatedBy?.Id
         }, cancellationToken);
     }
     

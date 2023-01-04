@@ -11,11 +11,11 @@ namespace Acme.Todoist.Application.Services
             ISender sender,
             IMapper mapper)
         {
-            Dispatcher = sender;
+            Sender = sender;
             Mapper = mapper;
         }
 
-        protected ISender Dispatcher { get; }
+        protected ISender Sender { get; }
         protected IMapper Mapper { get; }
 
         protected Response<TResponseData> From<TModel, TResponseData>(CommandResult<TModel> result) => Response.From<TModel, TResponseData>(result, Mapper);

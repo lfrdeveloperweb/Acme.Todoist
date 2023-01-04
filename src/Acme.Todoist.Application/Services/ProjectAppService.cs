@@ -18,7 +18,7 @@ namespace Acme.Todoist.Application.Services
         public async Task<Response<ProjectResponseData>> GetAsync(string id, OperationContext operationContext, CancellationToken cancellationToken)
         {
             var query = new GetProjectDetails.Query(id, operationContext);
-            var queryResult = await Dispatcher.Send(query, cancellationToken).ConfigureAwait(false);
+            var queryResult = await Sender.Send(query, cancellationToken).ConfigureAwait(false);
 
             return Response.From<Project, ProjectResponseData>(queryResult, Mapper);
         }
@@ -26,7 +26,7 @@ namespace Acme.Todoist.Application.Services
         public async Task<PaginatedResponse<ProjectResponseData>> SearchAsync(PagingParameters pagingParameters, OperationContext operationContext, CancellationToken cancellationToken)
         {
             var query = new SearchProjectsPaginated.Query(pagingParameters, operationContext);
-            PaginatedQueryResult<Project> result = await Dispatcher.Send(query, cancellationToken).ConfigureAwait(false);
+            PaginatedQueryResult<Project> result = await Sender.Send(query, cancellationToken).ConfigureAwait(false);
 
             return Response.From<Project, ProjectResponseData>(result, Mapper);
         }
@@ -38,7 +38,7 @@ namespace Acme.Todoist.Application.Services
                 request.Color,
                 operationContext);
 
-            var result = await Dispatcher.Send(command, cancellationToken);
+            var result = await Sender.Send(command, cancellationToken);
 
             return Response.From<Project, ProjectResponseData>(result, Mapper);
         }

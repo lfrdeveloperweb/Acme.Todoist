@@ -28,7 +28,7 @@ public sealed class AccountAppService : AppServiceBase
             request.ConfirmPassword,
             operationContext);
 
-        var result = await Dispatcher.Send(command, cancellationToken);
+        var result = await Sender.Send(command, cancellationToken);
 
         return Response.From(result);
     }
@@ -40,35 +40,35 @@ public sealed class AccountAppService : AppServiceBase
             request.Password,
             context);
 
-        var result = await Dispatcher.Send(command, cancellationToken);
+        var result = await Sender.Send(command, cancellationToken);
 
         return Response.From<JwtToken, JwtTokenResponseData>(result, Mapper);
     }
     
     public async ValueTask<Response<UserResponseData>> GetProfileAsync(OperationContext context, CancellationToken cancellationToken)
     {
-        var result = await Dispatcher.Send(new GetUserDetails.Query(context.Identity.Id, context), cancellationToken);
+        var result = await Sender.Send(new GetUserDetails.Query(context.Identity.Id, context), cancellationToken);
 
         return Response.From<User, UserResponseData>(result, Mapper);
     }
 
     public async ValueTask<Response> LockAccountAsync(string userId, OperationContext context, CancellationToken cancellationToken)
     {
-        var result = await Dispatcher.Send(new LockAccount.Command(userId,context), cancellationToken);
+        var result = await Sender.Send(new LockAccount.Command(userId,context), cancellationToken);
 
         return Response.From(result);
     }
 
     public async ValueTask<Response> UnlockAccountAsync(string userId, OperationContext context, CancellationToken cancellationToken)
     {
-        var result = await Dispatcher.Send(new UnlockAccount.Command(userId,context), cancellationToken);
+        var result = await Sender.Send(new UnlockAccount.Command(userId,context), cancellationToken);
 
         return Response.From(result);
     }
 
     public async ValueTask<Response> ForgotPasswordAsync(ForgotPasswordRequest request, OperationContext context, CancellationToken cancellationToken)
     {
-        var result = await Dispatcher.Send(new ForgotPassword.Command(request.DocumentNumber, context), cancellationToken);
+        var result = await Sender.Send(new ForgotPassword.Command(request.DocumentNumber, context), cancellationToken);
 
         return Response.From(result);
     }
@@ -83,7 +83,7 @@ public sealed class AccountAppService : AppServiceBase
             request.Token,
             context);
         
-        var result = await Dispatcher.Send(command, cancellationToken);
+        var result = await Sender.Send(command, cancellationToken);
 
         return Response.From(result);
     }
@@ -96,7 +96,7 @@ public sealed class AccountAppService : AppServiceBase
             request.ConfirmNewPassword,
             context);
 
-        var result = await Dispatcher.Send(command, cancellationToken);
+        var result = await Sender.Send(command, cancellationToken);
 
         return Response.From(result);
     }
@@ -108,7 +108,7 @@ public sealed class AccountAppService : AppServiceBase
             request.Token,
             context);
 
-        var result = await Dispatcher.Send(command, cancellationToken);
+        var result = await Sender.Send(command, cancellationToken);
 
         return Response.From(result);
     }

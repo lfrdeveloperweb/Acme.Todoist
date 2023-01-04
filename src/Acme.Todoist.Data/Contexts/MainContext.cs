@@ -9,6 +9,7 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Acme.Todoist.Domain.Models;
 
 namespace Acme.Todoist.Data.Contexts
 {
@@ -68,32 +69,26 @@ namespace Acme.Todoist.Data.Contexts
             throw new NotImplementedException();
         }
 
-        public void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
-        {
-            throw new NotImplementedException();
-        }
+        public void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted) { }
 
         public Task CommitTransactionAsync()
         {
-            //foreach (var entityEntry in ChangeTracker.Entries())
-            //{
-            //    switch (entityEntry.State)
-            //    {
-            //        case EntityState.Added when entityEntry.Entity is EntityBase createdEntity:
-            //            createdEntity.CreatedAt = _dateTimeProvider.UtcNow;
-            //            break;
-            //        case EntityState.Added when entityEntry.Entity is EntityBase updatedEntity:
-            //            updatedEntity.UpdatedAt = _dateTimeProvider.UtcNow;
-            //            break;
-            //    }
-            //}
+            foreach (var entityEntry in ChangeTracker.Entries())
+            {
+                switch (entityEntry.State)
+                {
+                    case EntityState.Added when entityEntry.Entity is EntityBase createdEntity:
+                        createdEntity.CreatedAt = _systemClock.UtcNow;
+                        break;
+                    case EntityState.Modified when entityEntry.Entity is EntityBase updatedEntity:
+                        updatedEntity.UpdatedAt = _systemClock.UtcNow;
+                        break;
+                }
+            }
 
             return SaveChangesAsync();
         }
 
-        public void RollbackTransaction()
-        {
-            throw new NotImplementedException();
-        }
+        public void RollbackTransaction() { }
     }
 }
