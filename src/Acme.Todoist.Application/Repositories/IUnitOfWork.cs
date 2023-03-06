@@ -1,6 +1,7 @@
 ﻿using Acme.Todoist.Domain.Models;
 using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Acme.Todoist.Application.Repositories
@@ -34,7 +35,8 @@ namespace Acme.Todoist.Application.Repositories
         /// <summary>
         /// Commits the transaction.
         /// </summary>
-        Task CommitTransactionAsync();
+        /// <param name="cancellationToken"></param>
+        Task CommitTransactionAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Rolls back the transaction.

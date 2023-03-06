@@ -13,10 +13,11 @@ using Acme.Todoist.Application.Repositories;
 using Acme.Todoist.Data.Contexts;
 using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace Acme.Todoist.Data.Repositories
 {
-    public sealed class TodoRepository : Repository, ITodoRepository
+    public sealed class TodoRepository : Repository<Todo>, ITodoRepository
     {
         private const string SplitOn = "id,labels,id,id";
 
@@ -52,6 +53,9 @@ namespace Acme.Todoist.Data.Repositories
         /// <inheritdoc />
         public async Task<Todo> GetByIdAsync(string id, CancellationToken cancellationToken)
         {
+            return await base.DbSetAsNoTracking.FirstOrDefaultAsync(it => it.Id == id, cancellationToken);
+
+
             const string commandText = $"{BaseSelectCommandText} WHERE t.todo_id = @Id";
 
             var query = await base.Connection.QueryAsync<Todo, string, Membership, Membership, Todo>( 
@@ -283,11 +287,7 @@ namespace Acme.Todoist.Data.Repositories
 
         private static Todo MapProperties(Todo todo, string labels, Membership creator, Membership updater)
         {
-            if (labels is not null)
-            {
-                todo.Labels = JsonConvert.DeserializeObject<ICollection<string>>(labels);
-            }
-
+            todo.Labels = JsonConvert.DeserializeObject<ICollection<string>>(labels);
             todo.CreatedBy = creator;
             todo.UpdatedBy = updater;
 

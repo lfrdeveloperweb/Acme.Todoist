@@ -1,6 +1,7 @@
 ﻿using Acme.Todoist.Application.Repositories;
+using Acme.Todoist.Application.Services;
 using Acme.Todoist.Data.Repositories;
-using Acme.Todoist.Domain.Security;
+using Acme.Todoist.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Internal;
@@ -9,19 +10,20 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using Acme.Todoist.Domain.Models;
+using Acme.Todoist.Domain.Security;
 
 namespace Acme.Todoist.Data.Contexts
 {
     public sealed class MainContext : DbContext, IUnitOfWork, IHealthCheck
     {
+        private readonly IIdentityService _identityService;
         private readonly ISystemClock _systemClock;
 
         private IUserRepository _userRepository;
         private IProjectRepository _projectRepository;
         private ITodoRepository _todoRepository;
 
-        public MainContext(DbContextOptions<MainContext> options, ISystemClock systemClock)
+        public MainContext(DbContextOptions<MainContext> options, IIdentityService identityService, ISystemClock systemClock)
             : base(options)
         {
             // Database.Log = (sql) => Debug.Write(sql);
@@ -29,6 +31,7 @@ namespace Acme.Todoist.Data.Contexts
             //Configuration.ProxyCreationEnabled = false;
             //Configuration.AutoDetectChangesEnabled = true;
 
+            _identityService = identityService;
             _systemClock = systemClock;
         }
 
@@ -40,55 +43,72 @@ namespace Acme.Todoist.Data.Contexts
         public ITodoRepository TodoRepository => _todoRepository ??= new TodoRepository(this);
 
         public IDbConnection CreateConnection() => new NpgsqlConnection(base.Database.GetDbConnection().ConnectionString);
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.EnableSensitiveDataLogging();
-
-            base.OnConfiguring(optionsBuilder);
-        }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Magazine>().HasData
-            //(
-            //    new Magazine { MagazineId = 1, Name = "BASTA! Magazine" }
-            //);
-
-            // modelBuilder.Properties<datetime>().Configure(c => c.HasColumnType("datetime2").HasPrecision(4));
-
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
-
-            modelBuilder.Owned<Membership>();
 
             base.OnModelCreating(modelBuilder);
         }
 
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
-            throw new NotImplementedException();
+            configurationBuilder.Properties<DateTimeOffset>()
+                .HaveColumnType("timestamptz");
+
+            base.ConfigureConventions(configurationBuilder);
         }
 
         public void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted) { }
 
-        public Task CommitTransactionAsync()
+        public Task CommitTransactionAsync(CancellationToken cancellationToken)
         {
-            foreach (var entityEntry in ChangeTracker.Entries())
+            var identity = _identityService.GetIdentity();
+
+            foreach (var entityEntry in ChangeTracker.Entries<EntityBase>())
             {
                 switch (entityEntry.State)
                 {
-                    case EntityState.Added when entityEntry.Entity is EntityBase createdEntity:
-                        createdEntity.CreatedAt = _systemClock.UtcNow;
+                    case EntityState.Added:
+                        entityEntry.Entity.CreatedAt = _systemClock.UtcNow;
+                        
+                        if (identity.IsAuthenticated)
+                        {
+                            entityEntry.Entity.CreatedBy = Membership.From(identity);
+                        }
+                        
                         break;
-                    case EntityState.Modified when entityEntry.Entity is EntityBase updatedEntity:
-                        updatedEntity.UpdatedAt = _systemClock.UtcNow;
+                    case EntityState.Modified:
+                        entityEntry.Entity.UpdatedAt = _systemClock.UtcNow;
+                        
+                        if (identity.IsAuthenticated)
+                        {
+                            entityEntry.Entity.UpdatedBy = Membership.From(identity);
+                        }
+                        
                         break;
                 }
             }
 
-            return SaveChangesAsync();
+            return base.SaveChangesAsync(cancellationToken);
         }
 
         public void RollbackTransaction() { }
+
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
+        {
+            try
+            {
+                return await this.Database.CanConnectAsync(cancellationToken)
+                    ? HealthCheckResult.Healthy()
+                    : HealthCheckResult.Unhealthy();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+
+                return HealthCheckResult.Unhealthy();
+            }
+        }
     }
 }

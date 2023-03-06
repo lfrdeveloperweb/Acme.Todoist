@@ -51,7 +51,12 @@ builder.Host.UseDefaultServiceProvider(options =>
 {
     options.ValidateOnBuild = true;
 });
-AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+
+// For EF Core
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+// For Dapper
+// AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 builder.Services.AddSingleton<ISystemClock, SystemClock>();
 

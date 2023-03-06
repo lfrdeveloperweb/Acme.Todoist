@@ -34,7 +34,6 @@ public static class RegisterAccount
     {
         private readonly IPasswordHasher _passwordHasher;
         private readonly IKeyGenerator _keyGenerator;
-        private readonly ISystemClock _systemClock;
 
         public CommandHandler(
             ILoggerFactory loggerFactory,
@@ -42,12 +41,10 @@ public static class RegisterAccount
             ICommandValidator<Command> validator,
             IMapper mapper,
             IPasswordHasher passwordHasher,
-            IKeyGenerator keyGenerator,
-            ISystemClock systemClock) : base(loggerFactory, unitOfWork, validator, mapper)
+            IKeyGenerator keyGenerator) : base(loggerFactory, unitOfWork, validator, mapper)
         {
             _passwordHasher = passwordHasher;
             _keyGenerator = keyGenerator;
-            _systemClock = systemClock;
         }
 
         protected override async Task<CommandResult<User>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
@@ -57,7 +54,6 @@ public static class RegisterAccount
             user.Id = _keyGenerator.Generate();
             user.Role = Role.User;
             user.ChangePassword(_passwordHasher.HashPassword(command.Password));
-            user.CreatedAt = _systemClock.UtcNow;
 
             await UnitOfWork.UserRepository.CreateAsync(user, cancellationToken);
 

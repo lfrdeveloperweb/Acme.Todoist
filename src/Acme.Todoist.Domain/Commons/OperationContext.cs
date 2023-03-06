@@ -8,7 +8,6 @@ namespace Acme.Todoist.Domain.Commons
     public record OperationContext(
         string CorrelationId,
         IIdentityContext Identity,
-        bool IsAuthenticated,
         string InternalSourceIp = null,
         string ExternalSourceIp = null);
 }

@@ -15,9 +15,11 @@
     login_count				SMALLINT		NOT NULL	DEFAULT 0,
 	access_failed_count		int				NOT NULL	DEFAULT 0,
     is_locked				BOOLEAN			NOT NULL	CONSTRAINT user_is_locked_df DEFAULT false,
-	created_by				varchar(32)		NULL		CONSTRAINT user_user_created_by_fk REFERENCES "user",
+	created_by_id			varchar(32)		NULL		CONSTRAINT user_user_created_by_fk REFERENCES "user",
+	created_by_name			varchar(128)	NULL,
 	created_at				timestamptz		NOT NULL,
-	updated_by				varchar(32)		NULL		CONSTRAINT user_user_updated_by_fk REFERENCES "user",
+	updated_by_id			varchar(32)		NULL		CONSTRAINT user_user_updated_by_fk REFERENCES "user",
+	updated_by_name			varchar(128)	NULL,
 	updated_at				timestamptz		NULL
 );
 

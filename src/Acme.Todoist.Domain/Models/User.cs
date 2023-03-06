@@ -9,7 +9,7 @@ namespace Acme.Todoist.Domain.Models
 
         public string DocumentNumber { get; set; }
 
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         public string UserName { get; set; }
 
@@ -26,7 +26,7 @@ namespace Acme.Todoist.Domain.Models
         public Role Role { get; set; }
 
         public string PasswordHash { get; private set; }
-
+        
         public DateTimeOffset? LockedAt { get; private set; }
 
         public bool IsLocked => LockedAt.HasValue;
@@ -37,10 +37,9 @@ namespace Acme.Todoist.Domain.Models
 
         public DateTimeOffset? LastLoginAt { get; private set; }
 
-        public void ConfirmEmail(DateTimeOffset confirmedAt)
+        public void ConfirmEmail()
         {
             EmailConfirmed = true;
-            UpdatedAt = confirmedAt;
         }
 
         public void ChangePassword(string passwordHashed) => PasswordHash = passwordHashed;

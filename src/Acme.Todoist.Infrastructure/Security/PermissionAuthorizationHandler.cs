@@ -17,6 +17,11 @@ public sealed class PermissionAuthorizationHandler : AuthorizationHandler<Permis
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
+        if (!context.User.Identity.IsAuthenticated)
+        {
+            context.Fail();
+        }
+
         var subjectId = context.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
         using var scope = _serviceScopeFactory.CreateScope();

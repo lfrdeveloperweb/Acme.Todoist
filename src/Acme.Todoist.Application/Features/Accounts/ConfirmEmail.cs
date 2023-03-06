@@ -32,13 +32,12 @@ namespace Acme.Todoist.Application.Features.Accounts
 
             protected override async Task<CommandResult> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
             {
-                var user = await UnitOfWork.UserRepository.GetByEmailAsync(command.Email, cancellationToken);
-                if (user is null) return CommandResult.NotFound();
+                if (await UnitOfWork.UserRepository.GetByEmailAsync(command.Email, cancellationToken) is not { } user) 
+                    return CommandResult.NotFound();
                 
                 var userToken = await UnitOfWork.UserRepository.GetAsync<UserEmailConfirmationTokenData>(user.Id, UserTokenType.EmailConfirmationToken, command.Token, cancellationToken);
-
-
-                user.ConfirmEmail(_systemClock.UtcNow);
+                
+                user.ConfirmEmail();
                 user.UpdatedBy = Membership.From(user);
 
                 await UnitOfWork.UserRepository.UpdateAsync(user, cancellationToken);

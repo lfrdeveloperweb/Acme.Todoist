@@ -23,6 +23,8 @@ namespace Acme.Todoist.Domain.Security
         /// </summary>
         Role Role { get; }
 
+        bool IsAuthenticated { get; }
+
         /// <summary>
         /// Flag that indicate if user is admin.
         /// </summary>
@@ -41,8 +43,6 @@ namespace Acme.Todoist.Domain.Security
         /// <summary>
         /// Get first or default value by claim type from <see cref="Claims"/>.
         /// </summary>
-        /// <param name="claimType"></param>
-        /// <returns></returns>
         string GetFirstOrDefaultClaimValue(string claimType) => Claims.TryGetValue(claimType, out var values) ? values.FirstOrDefault() : null;
     }
 }

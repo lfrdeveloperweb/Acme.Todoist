@@ -34,8 +34,6 @@ namespace Acme.Todoist.Application.Core.Commands
 
         protected IMapper Mapper { get; }
 
-        // protected IEventDispatcher EventDispatcher { get; }
-
         public async Task<TCommandResult> Handle(TCommand command, CancellationToken cancellationToken)
         {
             var commandResult = new TCommandResult();
@@ -46,7 +44,7 @@ namespace Acme.Todoist.Application.Core.Commands
 
                 if (!command.BypassValidation && _validator is not null)
                 {
-                    var commandValidationResult = await _validator.ValidateCommandAsync(command);
+                    var commandValidationResult = await _validator.ValidateCommandAsync(command).ConfigureAwait(false);
                     if (!commandValidationResult.IsValid)
                     {
                         return CommandResult.UnprocessableEntity<TCommandResult>(commandValidationResult.Reports.ToArray());
@@ -55,10 +53,10 @@ namespace Acme.Todoist.Application.Core.Commands
 
                 UnitOfWork.BeginTransaction();
 
-                commandResult = await ProcessCommandAsync(command, cancellationToken);
+                commandResult = await ProcessCommandAsync(command, cancellationToken).ConfigureAwait(false);
                 if (commandResult.IsSuccessStatusCode)
                 {
-                    UnitOfWork?.CommitTransactionAsync();
+                    await UnitOfWork.CommitTransactionAsync(cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {

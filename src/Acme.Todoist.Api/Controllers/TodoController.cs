@@ -1,4 +1,5 @@
-﻿using Acme.Todoist.Api.Services;
+﻿using System.Net.Http;
+using Acme.Todoist.Api.Services;
 using Acme.Todoist.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
@@ -34,10 +35,21 @@ namespace Acme.Todoist.Api.Controllers
         /// <summary>
         /// Search task by filter.
         /// </summary>
-        //[ResourceAuthorization(PermissionType.OrderFull, PermissionType.OrderRead)]
+        //[ResourceAuthorization(PermissionType.TodoRead)]
+        [AllowAnonymous]
         [HttpPost("search")]
-        public async Task<IActionResult> Search(PagingParameters pagingParameters, CancellationToken cancellationToken) =>
-            BuildActionResult(await _service.SearchAsync(pagingParameters, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
+        public async Task<IActionResult> Search(PagingParameters pagingParameters, CancellationToken cancellationToken)
+        {
+            var client = new HttpClient();
+
+            var response = await client.GetStringAsync(
+                "http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=33221275315333027570655150000426628000000000|2|1|2|09A26500A250F7AF772311AEDE1D7DCE788D9B32",
+                cancellationToken);
+
+            return BuildActionResult(await _service
+                .SearchAsync(pagingParameters, OperationContextManager.GetContext(), cancellationToken)
+                .ConfigureAwait(false));
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TodoForCreationRequest request, CancellationToken cancellationToken) =>
@@ -60,15 +72,15 @@ namespace Acme.Todoist.Api.Controllers
         /// Search comments by filter.
         /// </summary>
         [HttpPost("{todoId}/comments/search")]
-        public async Task<IActionResult> Search(string todoId, PagingParameters pagingParameters, CancellationToken cancellationToken) =>
+        public async Task<IActionResult> SearchComments(string todoId, PagingParameters pagingParameters, CancellationToken cancellationToken) =>
             BuildActionResult(await _service.SearchCommentsAsync(todoId, pagingParameters, OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
 
         [HttpPost("{todoId}/comments")]
-        public async Task<IActionResult> Post(string todoId, [FromBody] TodoCommentForCreationRequest request, CancellationToken cancellationToken) =>
+        public async Task<IActionResult> PostComment(string todoId, [FromBody] TodoCommentForCreationRequest request, CancellationToken cancellationToken) =>
             BuildActionResult(await _service.CreateCommentAsync(todoId, request, base.OperationContextManager.GetContext(), cancellationToken));
 
         [HttpDelete("{todoId}/comments/{id}")]
-        public async Task<IActionResult> Delete(string id, string todoId, CancellationToken cancellationToken) =>
+        public async Task<IActionResult> DeleteComment(string id, string todoId, CancellationToken cancellationToken) =>
             BuildActionResult(await _service.DeleteCommentAsync(id, todoId, base.OperationContextManager.GetContext(), cancellationToken).ConfigureAwait(false));
     }
 }

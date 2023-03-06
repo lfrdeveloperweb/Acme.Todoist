@@ -6,7 +6,6 @@ using Acme.Todoist.Domain.Commons;
 using Acme.Todoist.Domain.Resources;
 using Acme.Todoist.Domain.Security;
 using FluentValidation;
-using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,17 +25,14 @@ public static class ResetPassword
     public sealed class CommandHandler : CommandHandler<Command>
     {
         private readonly IPasswordHasher _passwordHasher;
-        private readonly ISystemClock _systemClock;
 
         public CommandHandler(
             ILoggerFactory loggerFactory,
             IUnitOfWork unitOfWork,
             ICommandValidator<Command> validator,
-            IPasswordHasher passwordHasher,
-            ISystemClock systemClock) : base(loggerFactory, unitOfWork, validator)
+            IPasswordHasher passwordHasher) : base(loggerFactory, unitOfWork, validator)
         {
             _passwordHasher = passwordHasher;
-            _systemClock = systemClock;
         }
 
         protected override async Task<CommandResult> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
@@ -54,9 +50,6 @@ public static class ResetPassword
             //{
             //    return CommandResult.UnprocessableEntity<CommandResult>(ErrorsFrom(confirmPasswordResetResult));
             //}
-
-            user.UpdatedBy = Membership.From(command.Context.Identity);
-            user.UpdatedAt = _systemClock.UtcNow;
 
             Logger.LogWarning("Reset password applied to user {UserId} with email {Email}.", user.Id, user.Email);
 

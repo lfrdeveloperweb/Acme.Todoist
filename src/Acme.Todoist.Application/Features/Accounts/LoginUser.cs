@@ -1,5 +1,4 @@
 ﻿using Acme.Todoist.Application.Core.Commands;
-using Acme.Todoist.Application.Core.Commons;
 using Acme.Todoist.Application.Core.Security;
 using Acme.Todoist.Application.Extensions;
 using Acme.Todoist.Application.Repositories;
@@ -43,8 +42,7 @@ public static class LoginUser
 
         protected override async Task<CommandResult<JwtToken>> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
         {
-            var user = await UnitOfWork.UserRepository.GetByEmailAsync(command.Email, cancellationToken);
-            if (user is null)
+            if (await UnitOfWork.UserRepository.GetByEmailAsync(command.Email, cancellationToken) is not { } user)
             {
                 return CommandResult.Unauthorized<CommandResult<JwtToken>>();
             }
@@ -72,7 +70,7 @@ public static class LoginUser
                 }
 
                 user.IncreaseAccessFailedCount();
-
+                
                 await UnitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
 
                 //await _mediator.Publish(new UserLoginFailedEvent(user.Id, request.Data.Login));

@@ -4,6 +4,7 @@ using Acme.Todoist.Domain.Models;
 using Acme.Todoist.Domain.Security;
 using Acme.Todoist.Domain.Specs.Core;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ public sealed class UserRepository : Repository<User>, IUserRepository
 	             , u.last_login_at
                  , u.login_count
                  , u.access_failed_count
-                 , u.is_locked
+                 , u.locked_at
                  , u.created_at
                  , u.updated_at
                  , creator.user_id as id
@@ -45,7 +46,7 @@ public sealed class UserRepository : Repository<User>, IUserRepository
 
     public async Task<User> GetAsync(Specification<User> spec, CancellationToken cancellationToken)
     {
-        return new User();
+        return default;
     }
 
     /// <inheritdoc />
@@ -75,18 +76,9 @@ public sealed class UserRepository : Repository<User>, IUserRepository
         return query.FirstOrDefault();
     }
 
-    public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken)
-    {
-        const string commandText = $"{BaseSelectCommandText} WHERE u.email = @Email";
-
-        var query = await base.Connection.QueryAsync<User, Membership, Membership, User>(
-            sql: commandText,
-            map: MapProperties,
-            param: new { email },
-            transaction: base.Transaction);
-
-        return query.FirstOrDefault();
-    }
+    public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken) => 
+        await DbSetAsNoTracking
+            .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
 
     public async Task<User> GetByUserNameAsync(string userName, CancellationToken cancellationToken)
     {
@@ -109,21 +101,15 @@ public sealed class UserRepository : Repository<User>, IUserRepository
         return ExistsWithTransactionAsync(commandText, new { id }, cancellationToken);
     }
 
-    public Task<bool> ExistByDocumentNumberAsync(string documentNumber, CancellationToken cancellationToken)
-    {
-        const string commandText =
-            @"SELECT 1 FROM ""user"" WHERE document_number = @DocumentNumber;";
+    public Task<bool> ExistByDocumentNumberAsync(string documentNumber, CancellationToken cancellationToken) => 
+        DbSet.AnyAsync(it => it.DocumentNumber == documentNumber, cancellationToken);
 
-        return ExistsWithTransactionAsync(commandText, new { DocumentNumber = documentNumber }, cancellationToken);
-    }
+    //const string commandText =
+    //    @"SELECT 1 FROM ""user"" WHERE document_number = @DocumentNumber;";
+    //return ExistsWithTransactionAsync(commandText, new { DocumentNumber = documentNumber }, cancellationToken);
 
-    public Task<bool> ExistByEmailAsync(string email, CancellationToken cancellationToken)
-    {
-        const string commandText =
-            @"SELECT 1 FROM ""user"" WHERE email = @Email;";
-
-        return ExistsWithTransactionAsync(commandText, new { email }, cancellationToken);
-    }
+    public Task<bool> ExistByEmailAsync(string email, CancellationToken cancellationToken) =>
+        DbSet.AnyAsync(it => it.Email == email, cancellationToken);
 
     public Task<bool> ExistByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
     {
@@ -191,6 +177,11 @@ public sealed class UserRepository : Repository<User>, IUserRepository
 
     public Task UpdateAsync(User user, CancellationToken cancellationToken)
     {
+        DbSet.Update(user);
+
+        return Task.CompletedTask;
+
+        /*
         const string commandText = @"
             UPDATE ""user""
                SET document_number = @DocumentNumber
@@ -221,6 +212,7 @@ public sealed class UserRepository : Repository<User>, IUserRepository
             user.UpdatedAt,
             UpdatedBy = user.UpdatedBy?.Id
         }, cancellationToken);
+        */
     }
     
     public Task ChangePasswordAsync(User user, CancellationToken cancellationToken)

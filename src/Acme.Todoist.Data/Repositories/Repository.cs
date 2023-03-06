@@ -111,7 +111,8 @@ namespace Acme.Todoist.Data.Repositories
             : base(context)
         {
             DbSet = Context.Set<TEntity>();
-            DbSetAsNoTracking = Context.Set<TEntity>().AsNoTrackingWithIdentityResolution();
+            DbSetAsNoTracking = Context.Set<TEntity>()
+                .AsNoTrackingWithIdentityResolution();
         }
 
         protected virtual IQueryable<TEntity> DbSetAsNoTracking { get; }
