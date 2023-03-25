@@ -50,8 +50,8 @@ namespace Acme.Todoist.Application.Features.Todos
                 var todo = Mapper.Map<Todo>(command);
 
                 todo.Id = _keyGenerator.Generate();
-                todo.CreatedBy = Membership.From(command.OperationContext.Identity);
-                todo.CreatedAt = _systemClock.UtcNow;
+                //todo.CreatedBy = Membership.From(command.OperationContext.Identity);
+                //todo.CreatedAt = _systemClock.UtcNow;
 
                 await UnitOfWork.TodoRepository.CreateAsync(todo, cancellationToken);
 

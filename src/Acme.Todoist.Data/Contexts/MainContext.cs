@@ -70,6 +70,8 @@ namespace Acme.Todoist.Data.Contexts
                 switch (entityEntry.State)
                 {
                     case EntityState.Added:
+                        // this.Entry(entityEntry).Property("CreatedAt").CurrentValue = _systemClock.UtcNow;
+
                         entityEntry.Entity.CreatedAt = _systemClock.UtcNow;
                         
                         if (identity.IsAuthenticated)
